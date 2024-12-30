@@ -76,15 +76,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'FinApp.wsgi.application'
 
+STATICFILES_DIRS = [
+    BASE_DIR / "finance/static",
+]
+
+
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+            'ENGINE': 'django.db.backends.postgresql',  # Silnik PostgreSQL
+            'NAME': 'nazwa_bazy_danych',               # Nazwa bazy danych z Supabase
+            'USER': 'nazwa_użytkownika',               # Użytkownik bazy danych
+            'PASSWORD': 'twoje_hasło',                 # Hasło użytkownika
+            'HOST': 'https://ujrsmdegbzqjcsrxvyao.supabase.co',              # Host z Supabase
+            'PORT': '5432',                            # Port, domyślnie 5432
+            }
 }
 
 

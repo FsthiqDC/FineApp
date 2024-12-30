@@ -1,5 +1,7 @@
 from django.contrib.auth import authenticate
+from django.shortcuts import render
 from django.http import JsonResponse
+import json
 
 def login_view(request):
     if request.method == 'POST':
