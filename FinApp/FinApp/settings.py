@@ -41,20 +41,36 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',
-]
-
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_COOKIE_HTTPONLY = False  # Musi być False, aby JavaScript miał dostęp
+CSRF_COOKIE_SAMESITE = 'Lax'  # Może być Lax, aby ciasteczko było dostępne na różnych portach
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 
 ROOT_URLCONF = 'FinApp.urls'
 
@@ -88,10 +104,10 @@ STATICFILES_DIRS = [
 DATABASES = {
     'default': {
             'ENGINE': 'django.db.backends.postgresql',  # Silnik PostgreSQL
-            'NAME': 'nazwa_bazy_danych',               # Nazwa bazy danych z Supabase
-            'USER': 'nazwa_użytkownika',               # Użytkownik bazy danych
-            'PASSWORD': 'twoje_hasło',                 # Hasło użytkownika
-            'HOST': 'https://ujrsmdegbzqjcsrxvyao.supabase.co',              # Host z Supabase
+            'NAME': 'postgres',               # Nazwa bazy danych z Supabase
+            'USER': 'postgres',               # Użytkownik bazy danych
+            'PASSWORD': '006@Fex2001#',                 # Hasło użytkownika
+            'HOST': 'db.ujrsmdegbzqjcsrxvyao.supabase.co',              # Host z Supabase
             'PORT': '5432',                            # Port, domyślnie 5432
             }
 }
