@@ -11,6 +11,19 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Ładowanie zmiennych z pliku .env
+
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise ValueError("SUPABASE_URL and SUPABASE_KEY must be set in .env file")
+
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqcnNtZGVnYnpxamNzcnh2eWFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU0OTAyMzksImV4cCI6MjA1MTA2NjIzOX0.r9GbGA8I0hfO9yqEif8jEOGQzvfJ_WvRD2i4YLU2rdM')
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'finance',
     'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',  # To jest część djangorestframework
 ]
 
 MIDDLEWARE = [
@@ -52,6 +67,21 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+
+# ustawienia REST Framework
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'finance.custom_authentication.CustomAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
+
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
@@ -95,8 +125,6 @@ WSGI_APPLICATION = 'FinApp.wsgi.application'
 STATICFILES_DIRS = [
     BASE_DIR / "finance/static",
 ]
-
-
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

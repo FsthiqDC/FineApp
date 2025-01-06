@@ -1,0 +1,124 @@
+/* General Styles */
+.categories-container {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f7fa;
+    text-align: center;
+  }
+  
+  .categories-container h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+  }
+  
+  .no-data {
+    font-size: 1.1em;
+    color: #666;
+    margin-top: 20px;
+  }
+  
+  /* Categories List */
+  .categories-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  /* Category Card */
+  .category-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px 20px;
+    width: 300px;
+    text-align: left;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .category-card:hover {
+    transform: scale(1.03);
+  }
+  
+  .category-card h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #4caf50;
+  }
+  
+  .category-card p {
+    font-size: 1em;
+    color: #666;
+    line-height: 1.4;
+  }
+  
+  /* General Styles */
+.homepage-container {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    background-color: #f5f7fa;
+  }
+  
+  /* Charts Section */
+  .content {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .charts-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .chart {
+    flex: 1 1 45%;
+    max-width: 45%;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chart h3 {
+    margin-bottom: 10px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none;
+      flex-direction: column;
+      background-color: #4caf50;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 10px 0;
+    }
+  
+    .nav-links.nav-active {
+      display: flex;
+    }
+  
+    .mobile-menu-icon {
+      display: block;
+    }
+  
+    .chart {
+      max-width: 100%;
+      flex: 1 1 100%;
+    }
+  }
+  
