@@ -26,6 +26,50 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def categories_view(request):
+    auth_header = request.headers.get('Authorization')
+    print("🔑 Nagłówek Authorization:", auth_header)
+
+    if not auth_header:
+        return Response({"error": "Brak tokena autoryzacyjnego"}, status=HTTP_403_FORBIDDEN)
+
+    try:
+        # Token validation
+        prefix, token = auth_header.split(' ')
+        if prefix.lower() != 'bearer':
+            return Response({"error": "Nieprawidłowy prefiks tokena"}, status=HTTP_403_FORBIDDEN)
+
+        payload = jwt.decode(token, SUPABASE_KEY, algorithms=['HS256'])
+        user_id = payload.get('user_id')
+
+        if not user_id or not isinstance(user_id, str):
+            return Response({"error": "Nieprawidłowy identyfikator użytkownika"}, status=HTTP_403_FORBIDDEN)
+
+        print("✅ Token poprawny. Pobieranie kategorii...")
+
+        # Pobieranie kategorii z Supabase
+        response = supabase.table('Categories').select('*').execute()
+
+        if response.data:
+            categories = response.data
+            return Response({"categories": categories}, status=HTTP_200_OK)
+        
+        if response.error:
+            print(f"❌ Błąd Supabase: {response.error}")
+            return Response({"error": f"Błąd pobierania kategorii: {response.error}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"error": "Nie udało się pobrać kategorii"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+    except jwt.ExpiredSignatureError:
+        return Response({"error": "Token wygasł"}, status=HTTP_403_FORBIDDEN)
+    except jwt.InvalidTokenError:
+        return Response({"error": "Nieprawidłowy token"}, status=HTTP_403_FORBIDDEN)
+    except Exception as e:
+        print(f"❌ Wystąpił błąd: {e}")
+        return Response({"error": f"Błąd serwera: {e}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def home_view(request):
     auth_header = request.headers.get('Authorization')
     print("🔑 Nagłówek Authorization:", auth_header)

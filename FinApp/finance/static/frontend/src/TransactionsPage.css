@@ -119,24 +119,6 @@
 
 /* ======== Responsywność ======== */
 @media (max-width: 768px) {
-  .nav-links {
-    display: none;
-    flex-direction: column;
-    background-color: #4caf50;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    z-index: 100;
-    padding: 10px 0;
-  }
-
-  .mobile-menu-icon {
-    display: block;
-    font-size: 1.8em;
-    cursor: pointer;
-  }
-
   .chart {
     max-width: 100%;
     flex: 1 1 100%;

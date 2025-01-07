@@ -1,124 +1,96 @@
-/* General Styles */
+/* Kontener główny dla kategorii */
 .categories-container {
-    font-family: 'Arial', sans-serif;
-    background-color: #f5f7fa;
-    text-align: center;
-  }
-  
-  .categories-container h2 {
-    font-size: 2em;
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  .error-message {
-    color: red;
-    font-size: 1.1em;
-    margin-bottom: 10px;
-  }
-  
-  .no-data {
-    font-size: 1.1em;
-    color: #666;
-    margin-top: 20px;
-  }
-  
-  /* Categories List */
+  font-family: 'Arial', sans-serif;
+  margin: 0 auto;
+  background-color: #f9fafc;
+  text-align: center;
+}
+
+/* Nagłówek strony */
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 2em;
+}
+
+/* Wiadomości błędów */
+.error-message {
+  color: red;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Lista kategorii */
+.categories-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Maksymalnie 3 kolumny */
+  justify-content: center; /* Centrowanie siatki */
+  align-items: start; /* Wyrównanie do góry */
+}
+
+/* Pojedyncza kategoria */
+.category-item {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+  text-align: left; /* Tekst wyrównany do lewej */
+  min-height: 250px; /* Stała wysokość dla wszystkich pojemników */
+  max-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Tekst zaczyna się od góry */
+  margin: 20px;
+  overflow: hidden;
+}
+
+.category-item:hover {
+  transform: scale(1.05);
+}
+
+/* Nagłówek kategorii */
+.category-item h3 {
+  margin: 0 0 10px;
+  font-size: 1.2em;
+  color: #4caf50;
+  font-weight: bold;
+  overflow-wrap: break-word; /* Przenoszenie długiego tekstu */
+  word-wrap: break-word;
+  text-align: center;
+}
+
+/* Opis kategorii */
+.category-item p {
+  margin: 0;
+  font-size: 0.9em;
+  color: #666;
+  text-align: justify;
+  overflow-wrap: break-word; /* Zapobiega nachodzeniu na inne elementy */
+  word-wrap: break-word;
+  margin-top: 10px;
+  flex-grow: 1; /* Zapełnia dostępną przestrzeń, aby tekst nie był ściśnięty */
+  text-align: center;
+}
+
+/* Responsywność */
+@media (max-width: 992px) {
   .categories-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    margin-top: 20px;
+    grid-template-columns: repeat(2, 1fr); /* Dwie kolumny na średnich ekranach */
   }
-  
-  /* Category Card */
-  .category-card {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 15px 20px;
-    width: 300px;
-    text-align: left;
-    transition: transform 0.2s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .categories-list {
+    grid-template-columns: 1fr; /* Jedna kolumna na małych ekranach */
   }
-  
-  .category-card:hover {
-    transform: scale(1.03);
+
+  .category-item {
+    width: 90%;
+    margin: 0 auto;
   }
-  
-  .category-card h3 {
-    font-size: 1.2em;
-    margin-bottom: 10px;
-    color: #4caf50;
-  }
-  
-  .category-card p {
-    font-size: 1em;
-    color: #666;
-    line-height: 1.4;
-  }
-  
-  /* General Styles */
-.homepage-container {
-    font-family: 'Arial', sans-serif;
-    color: #333;
-    background-color: #f5f7fa;
-  }
-  
-  /* Charts Section */
-  .content {
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .charts-container {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .chart {
-    flex: 1 1 45%;
-    max-width: 45%;
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .chart h3 {
-    margin-bottom: 10px;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .nav-links {
-      display: none;
-      flex-direction: column;
-      background-color: #4caf50;
-      position: absolute;
-      top: 60px;
-      left: 0;
-      width: 100%;
-      z-index: 100;
-      padding: 10px 0;
-    }
-  
-    .nav-links.nav-active {
-      display: flex;
-    }
-  
-    .mobile-menu-icon {
-      display: block;
-    }
-  
-    .chart {
-      max-width: 100%;
-      flex: 1 1 100%;
-    }
-  }
-  
+}

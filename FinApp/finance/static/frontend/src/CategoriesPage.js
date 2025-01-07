@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import './CategoriesPage.css';
-import { supabase } from './supabaseClient';
+import axios from 'axios';
 
 const CategoriesPage = () => {
   const [categories, setCategories] = useState([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const { data, error } = await supabase.from('Categories').select('*');
-        if (error) throw error;
-        setCategories(data || []);
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get('http://127.0.0.1:8000/api/categories/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setCategories(response.data.categories || []);
       } catch (err) {
-        console.error('❌ Błąd pobierania kategorii:', err.message);
+        console.error('❌ Błąd pobierania kategorii:', err.response?.data || err.message);
+        setError('Nie udało się pobrać kategorii.');
       }
     };
 
@@ -24,6 +30,7 @@ const CategoriesPage = () => {
     <div className="categories-container">
       <Navbar />
       <h2>📚 Kategorie</h2>
+      {error && <p className="error-message">{error}</p>}
       <ul className="categories-list">
         {categories.map((category) => (
           <li key={category.category_id} className="category-item">
