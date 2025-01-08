@@ -21,17 +21,13 @@ const LoginPage = () => {
       );
 
       const { token, user } = response.data;
-      
-      // Zapisanie tokena i danych użytkownika w localStorage
       localStorage.setItem('authToken', token);
       localStorage.setItem('username', user.username);
       localStorage.setItem('userType', user.user_type);
 
       setMessage('✅ Zalogowano pomyślnie!');
-      
-      // Przekierowanie do strony HomePage
       setTimeout(() => {
-        navigate('/'); // Upewnij się, że '/' prowadzi do HomePage
+        navigate('/');
       }, 1000);
     } catch (error) {
       console.error('Błąd logowania:', error.response?.data?.error || error.message);
@@ -42,7 +38,7 @@ const LoginPage = () => {
   return (
     <div className="login-container">
       <div className="login-wrapper">
-        <h2>💰 FinApp - Logowanie</h2>
+        <img src="/finapplogo.png" alt="FinApp Logo" className="login-logo" />
         <form onSubmit={handleLogin}>
           <div className="form-group">
             <label>Email:</label>

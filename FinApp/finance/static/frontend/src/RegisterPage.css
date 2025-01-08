@@ -1,37 +1,41 @@
-/* Kontener strony rejestracji */
+/* ===== Kontener strony rejestracji ===== */
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #74ebd5, #acb6e5);
+  background: #fdfdfd; /* Jasne tło */
   font-family: 'Arial', sans-serif;
 }
 
-/* Główny wrapper formularza rejestracji */
+/* ===== Wrapper formularza ===== */
 .form-wrapper {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 30px;
   width: 400px;
   text-align: center;
+  border: 1px solid #e0e0e0;
 }
 
-/* Nagłówek */
+/* ===== Logo aplikacji ===== */
+.register-logo {
+  width: 200px;
+}
+
+/* ===== Nagłówek ===== */
 h2 {
   margin-bottom: 20px;
-  color: #333;
-  font-size: 24px;
+  color: #7D4D27;
+  font-size: 1.5em;
+  font-weight: bold;
 }
 
-/* Grupowanie pól formularza */
+/* ===== Pola formularza ===== */
 .form-group {
   margin-bottom: 15px;
   text-align: left;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
 }
 
 .form-group label {
@@ -40,7 +44,6 @@ h2 {
   color: #555;
 }
 
-/* Pola formularza */
 .form-group input {
   width: 100%;
   padding: 10px;
@@ -48,17 +51,16 @@ h2 {
   border-radius: 4px;
   font-size: 14px;
   margin-bottom: 10px;
-  box-sizing: border-box;
 }
 
 .form-group input:focus {
-  border-color: #74ebd5;
+  border-color: #7D4D27;
   outline: none;
 }
 
-/* Przycisk rejestracji */
+/* ===== Przycisk rejestracji ===== */
 .register-button {
-  background-color: #4c6faf;
+  background-color: #7D4D27;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -67,25 +69,21 @@ h2 {
   cursor: pointer;
   margin-top: 10px;
   width: 100%;
-  text-align: center;
+  transition: background 0.3s ease;
 }
 
 .register-button:hover {
-  background-color: #4c53af;
+  background-color: #6C4221;
 }
 
-/* Komunikaty */
+/* ===== Komunikaty ===== */
 .message {
   margin-top: 15px;
   font-size: 14px;
-  color: #333;
-  text-align: center;
+  color: #7D4D27;
 }
 
-.form-group input:hover {
-  border-color: #5bc0de;
-}
-
+/* ===== Responsywność ===== */
 @media (max-width: 480px) {
   .form-wrapper {
     width: 90%;

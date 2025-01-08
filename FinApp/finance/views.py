@@ -16,7 +16,9 @@ from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN, HTTP_500_INTE
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
-import jwt, os, json, bcrypt
+import jwt, os, json, bcrypt, logging
+
+logger = logging.getLogger(__name__)
 
 # Inicjalizacja Supabase
 SUPABASE_URL = os.getenv('SUPABASE_URL')
@@ -209,18 +211,49 @@ def login_view(request):
             return JsonResponse({'message': 'Nieprawidłowe dane logowania.'}, status=400)
     return JsonResponse({'message': 'Nieobsługiwana metoda.'}, status=405)
 
+@csrf_exempt
 def register_view(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            user = User.objects.create_user(
-                username=data['username'],
-                email=data['email'],
-                password=data['password'],
-                first_name=data['first_name'],
-                last_name=data['last_name']
-            )
-            return JsonResponse({'message': 'Użytkownik został utworzony'}, status=201)
+
+            # Walidacja wymaganych pól
+            required_fields = ['username', 'email', 'password', 'first_name', 'last_name']
+            for field in required_fields:
+                if field not in data or not data[field]:
+                    return JsonResponse({'message': f'Brak wymaganego pola: {field}'}, status=400)
+            
+            # Sprawdzenie czy użytkownik już istnieje
+            response = supabase.from_('App_Users').select('user_email').eq('user_email', data['email']).execute()
+            if response.data and len(response.data) > 0:
+                return JsonResponse({'message': 'Użytkownik z tym adresem email już istnieje'}, status=400)
+
+            # Hashowanie hasła
+            hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+            # Tworzenie użytkownika w Supabase
+            response = supabase.from_('App_Users').insert([
+                {
+                    'username': data['username'],
+                    'user_email': data['email'],
+                    'password': hashed_password,
+                    'first_name': data['first_name'],
+                    'last_name': data['last_name'],
+                    'created_at': 'now()',
+                    'last_login': 'now()',
+                    'is_active': True,
+                    'langauge': 'PL',
+                    'currency': 'PLN',
+                    'user_type': 'user'
+                }
+            ]).execute()
+
+
+            return JsonResponse({'message': '✅ Użytkownik został utworzony pomyślnie'}, status=201)
+        
+        except json.JSONDecodeError:
+            return JsonResponse({'message': 'Błąd dekodowania JSON'}, status=400)
         except Exception as e:
-            return JsonResponse({'message': str(e)}, status=400)
+            return JsonResponse({'message': f'Wystąpił błąd: {str(e)}'}, status=500)
+
     return JsonResponse({'message': 'Nieobsługiwana metoda'}, status=405)

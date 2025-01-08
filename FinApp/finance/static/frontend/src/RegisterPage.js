@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { supabase } from './supabaseClient';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
@@ -24,54 +24,40 @@ const RegisterPage = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setMessage('Rejestracja w toku...');
+    setMessage('🔄 Rejestracja w toku...');
 
     try {
-      const { data: userData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      if (authError) {
-        throw new Error(`Błąd autoryzacji: ${authError.message}`);
-      }
-
-      const { error: profileError } = await supabase.from('App_Users').insert([
+      const response = await axios.post(
+        'http://127.0.0.1:8000/api/auth/register/',
         {
-          user_id: userData?.user?.id || null,
           username: formData.username,
-          user_email: formData.email,
+          email: formData.email,
           password: formData.password,
           first_name: formData.firstName,
           last_name: formData.lastName,
-          created_at: new Date().toISOString(),
-          last_login: new Date().toISOString(),
-          is_active: true,
-          langauge: 'PL', // Ustawiamy domyślnie jako PL
-          currency: 'PLN', // Ustawiamy domyślnie jako PLN
-          user_type: 'user'
         },
-      ]);
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
 
-      if (profileError) {
-        throw new Error(`Błąd tworzenia profilu użytkownika: ${profileError.message}`);
+      if (response.status === 201) {
+        setMessage('✅ Rejestracja zakończona sukcesem! Przekierowanie do logowania...');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
       }
-
-      setMessage('Rejestracja zakończona sukcesem! Przekierowanie do logowania...');
-
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
     } catch (error) {
-      console.error('Błąd:', error.message);
-      setMessage(`Błąd: ${error.message}`);
+      console.error('❌ Błąd rejestracji:', error.response?.data?.message || error.message);
+      setMessage(`❌ ${error.response?.data?.message || 'Wystąpił błąd rejestracji'}`);
     }
   };
 
   return (
     <div className="register-container">
       <div className="form-wrapper">
-        <h2>🔑 Rejestracja Użytkownika</h2>
+        <img src="/finapplogo.png" alt="FinApp Logo" className="register-logo" />
+        <h2>Rejestracja użytkownika</h2>
         <form onSubmit={handleRegister}>
           <div className="form-group">
             <label>Nazwa użytkownika:</label>

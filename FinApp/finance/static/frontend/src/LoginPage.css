@@ -1,31 +1,31 @@
-/* Kontener strony logowania */
+/* ===== Kontener strony logowania ===== */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #74ebd5, #acb6e5);
+  background: #fdfdfd; /* Jasne tło */
   font-family: 'Arial', sans-serif;
 }
 
-/* Wrapper formularza logowania */
+/* ===== Wrapper formularza logowania ===== */
 .login-wrapper {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 30px;
   width: 400px;
   text-align: center;
+  border: 1px solid #e0e0e0;
 }
 
-/* Nagłówek */
-h2 {
+/* ===== Logo aplikacji ===== */
+.login-logo {
+  width: 200px;
   margin-bottom: 20px;
-  color: #333;
-  font-size: 24px;
 }
 
-/* Pola formularza */
+/* ===== Pola formularza ===== */
 .form-group {
   margin-bottom: 15px;
   text-align: left;
@@ -40,7 +40,6 @@ h2 {
   color: #555;
 }
 
-/* Pola tekstowe */
 .form-group input {
   width: 100%;
   padding: 10px;
@@ -52,13 +51,13 @@ h2 {
 }
 
 .form-group input:focus {
-  border-color: #74ebd5;
+  border-color: #7D4D27;
   outline: none;
 }
 
-/* Przycisk logowania */
+/* ===== Przycisk logowania ===== */
 .login-button {
-  background-color: #4caf50;
+  background-color: #7D4D27;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -67,22 +66,23 @@ h2 {
   cursor: pointer;
   margin-top: 10px;
   width: 100%;
+  transition: background 0.3s ease;
 }
 
 .login-button:hover {
-  background-color: #45a049;
+  background-color: #6C4221;
 }
 
-/* Komunikat statusu */
+/* ===== Komunikat statusu ===== */
 .message {
   margin-top: 15px;
   font-size: 14px;
-  color: #333;
+  color: #7D4D27;
 }
 
-/* Przycisk rejestracji */
+/* ===== Przycisk rejestracji ===== */
 .register-button {
-  background-color: #2196f3;
+  background-color: #b28f69;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -91,13 +91,14 @@ h2 {
   cursor: pointer;
   margin-top: 10px;
   width: 100%;
+  transition: background 0.3s ease;
 }
 
 .register-button:hover {
-  background-color: #1976d2;
+  background-color: #a57e5c;
 }
 
-/* Responsywność */
+/* ===== Responsywność ===== */
 @media (max-width: 480px) {
   .login-wrapper {
     width: 90%;
