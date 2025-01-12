@@ -1,126 +1,102 @@
-/* ======== Ogólne Style Strony ======== */
 .transactions-container {
   font-family: 'Arial', sans-serif;
+  margin: 0 auto;
   background-color: #f9fafc;
-  color: #333;
 }
 
-/* ======== Nagłówki ======== */
-.transactions-container h2 {
-  font-size: 1.8em;
-  margin-bottom: 15px;
-  text-align: center;
-  color: #4caf50;
-}
-
-/* ======== Formularz Transakcji ======== */
 .transaction-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   background-color: #fff;
-  border: 1px solid #ddd;
+  padding: 30px;
+  margin: 40px;
   border-radius: 8px;
-  padding: 20px;
-  max-width: 600px;
-  margin: 0 auto 30px auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .transaction-form input,
 .transaction-form select,
-.transaction-form textarea,
-.transaction-form button {
-  width: 100%;
-  margin-bottom: 15px;
-  padding: 10px;
-  font-size: 1em;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.transaction-form input:focus,
-.transaction-form select:focus,
-.transaction-form textarea:focus {
-  border-color: #4caf50;
-  outline: none;
-}
-
-/* Pole opisu większe, ale nie można go manipulować */
 .transaction-form textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: calc(100% - 20px); /* Szerokość z uwzględnieniem paddingu kontenera */
+  height: 40px; /* Ustalona wysokość dla wszystkich pól */
+  box-sizing: border-box; /* Uwzględnij padding w szerokości */
+}
+
+.transaction-form textarea {
+  min-height: calc(40px * 2 + 20px); /* Dwa razy wyższe od zwykłych pól + odstępy */
   resize: none;
-  height: 100px;
 }
 
-.transaction-form button {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+.transaction-form .form-row {
+  display: flex;
+  gap: 10px;
 }
 
-.transaction-form button:hover {
-  background-color: #388e3c;
+.transaction-form .form-row > * {
+  flex: 1; /* Wszystkie elementy w wierszu mają równą szerokość */
 }
 
-/* ======== Wiadomości Sukcesu i Błędu ======== */
-.success-message {
-  color: #388e3c;
-  text-align: center;
-  margin-bottom: 15px;
+.add-transaction-button {
+  width: 120px; /* Szerokość przycisku */
+  height: 40px; /* Wysokość przycisku */
+  border-radius: 3px; /* Lekko zaokrąglone rogi */
+  background-color: white; /* Białe tło */
+  color: black; /* Czarny tekst */
+  font-size: 14px; /* Nowoczesny, minimalistyczny rozmiar tekstu */
+  font-weight: 500; /* Średnia grubość czcionki dla nowoczesnego wyglądu */
+  cursor: pointer; /* Ręka kursora */
+  text-align: center; /* Wyśrodkowanie tekstu */
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; /* Płynne przejścia */
+  margin: 20px auto 0; /* Wyśrodkowanie przycisku */
+}
+
+.add-transaction-button:hover {
+  background-color: #f0f0f0; /* Jasnoszary kolor tła przy najechaniu */
+  color: black; /* Utrzymanie czarnego tekstu */
+  transform: translateY(-2px); /* Subtelne uniesienie przycisku */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Wyraźniejszy cień po najechaniu */
+}
+
+.add-transaction-button:active {
+  transform: translateY(0); /* Powrót do normalnej pozycji po kliknięciu */
+  background-color: rgba(0, 0, 0, 0.05); /* Delikatne przyciemnienie tła */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Redukcja cienia */
+}
+
+.add-transaction-button:focus {
+  outline: none; /* Usunięcie domyślnego konturu */
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2); /* Subtelny czarny kontur dla dostępności */
+}
+
+.transactions-list {
+  margin-top: 20px;
+}
+
+.transaction-item {
+  background: #fff;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-item p {
+  margin: 5px 0;
+  font-size: 14px;
 }
 
 .error-message {
-  color: #e53935;
-  text-align: center;
-  margin-bottom: 15px;
+  color: red;
+  font-weight: bold;
 }
 
-/* ======== Lista Transakcji ======== */
-.transactions-list {
-  list-style: none;
-  margin: 0 auto;
-  padding: 0;
-  max-width: 800px;
-}
-
-.transactions-list li {
-  background-color: #fff;
-  margin-bottom: 10px;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease;
-}
-
-.transactions-list li:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.transactions-list li p {
-  margin: 5px 0;
-  font-size: 0.95em;
-}
-
-.transactions-list li button {
-  margin-top: 10px;
-  background-color: #ff9800;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.9em;
-}
-
-.transactions-list li button:hover {
-  background-color: #f57c00;
-}
-
-/* ======== Responsywność ======== */
-@media (max-width: 768px) {
-  .chart {
-    max-width: 100%;
-    flex: 1 1 100%;
-  }
+.info-message {
+  color: #4caf50;
+  font-weight: bold;
 }

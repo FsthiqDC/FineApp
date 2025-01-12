@@ -2,7 +2,7 @@
 .categories-container {
   font-family: 'Arial', sans-serif;
   margin: 0 auto;
-  background-color: #f9fafc;
+  background-color: #fff; /* Białe tło */
   text-align: center;
 }
 
@@ -10,13 +10,15 @@
 h2 {
   text-align: center;
   margin-bottom: 20px;
-  color: #333;
-  font-size: 2em;
+  color: #000; /* Czarny tekst */
+  font-size: 2.2em;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 /* Wiadomości błędów */
 .error-message {
-  color: red;
+  color: #d9534f; /* Czerwony odcień na błędy */
   text-align: center;
   margin-bottom: 20px;
 }
@@ -24,40 +26,42 @@ h2 {
 /* Lista kategorii */
 .categories-list {
   list-style: none;
-  padding: 0;
+  padding: 30px;
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* Maksymalnie 3 kolumny */
+  gap: 20px;
   justify-content: center; /* Centrowanie siatki */
-  align-items: start; /* Wyrównanie do góry */
+  align-items: start;
 }
 
 /* Pojedyncza kategoria */
 .category-item {
   background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 1px solid #E0C097; /* Jasno-złoty odcień */
+  border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   text-align: left; /* Tekst wyrównany do lewej */
-  min-height: 250px; /* Stała wysokość dla wszystkich pojemników */
-  max-height: 250px;
+  min-height: 250px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Tekst zaczyna się od góry */
-  margin: 20px;
+  justify-content: flex-start;
+  margin: 10px auto;
   overflow: hidden;
 }
 
 .category-item:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Zwiększenie cienia na hover */
+  border-color: #7D4D27; /* Ciemniejszy złoty odcień */
 }
 
 /* Nagłówek kategorii */
 .category-item h3 {
   margin: 0 0 10px;
-  font-size: 1.2em;
-  color: #4caf50;
+  font-size: 1.4em;
+  color: #000; /* Czarny tekst */
   font-weight: bold;
   overflow-wrap: break-word; /* Przenoszenie długiego tekstu */
   word-wrap: break-word;
@@ -67,14 +71,31 @@ h2 {
 /* Opis kategorii */
 .category-item p {
   margin: 0;
-  font-size: 0.9em;
-  color: #666;
+  font-size: 1em;
+  color: #000; /* Czarny tekst */
   text-align: justify;
-  overflow-wrap: break-word; /* Zapobiega nachodzeniu na inne elementy */
+  overflow-wrap: break-word;
   word-wrap: break-word;
   margin-top: 10px;
-  flex-grow: 1; /* Zapełnia dostępną przestrzeń, aby tekst nie był ściśnięty */
-  text-align: center;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+/* Przycisk "Dodaj kategorię" */
+.add-category-button {
+  background-color: #7D4D27; /* Złoty odcień */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  text-transform: uppercase;
+}
+
+.add-category-button:hover {
+  background-color: #5E3A1F; /* Ciemniejszy złoty odcień */
 }
 
 /* Responsywność */

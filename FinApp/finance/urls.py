@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import login_view, register_view, csrf_view, home_view, get_user, login_user, categories_view
+from .views import login_view, register_view, csrf_view, home_view, get_user, login_user, categories_view, transactions_view
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
@@ -11,4 +11,6 @@ urlpatterns = [
     path('api/auth/login/', login_user, name='login-user'),
     path('api/auth/token/', obtain_auth_token, name='api_token_auth'),
     path('api/categories/', categories_view, name='categories_view'),
+    path('api/transactions/', transactions_view, name='transactions'),
+    
 ]

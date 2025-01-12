@@ -257,3 +257,52 @@ def register_view(request):
             return JsonResponse({'message': f'Wystąpił błąd: {str(e)}'}, status=500)
 
     return JsonResponse({'message': 'Nieobsługiwana metoda'}, status=405)
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+@csrf_exempt
+def transactions_view(request):
+    user_id = request.user.id
+
+    if request.method == 'GET':
+        try:
+            user_id = str(request.user.id)
+            response = supabase.from_('Transactions').select('*').eq('transaction_owner', user_id).execute()
+
+            # Sprawdzanie czy response zawiera dane lub błąd
+            if not response or not hasattr(response, 'data'):
+                return JsonResponse({'error': 'Nieoczekiwana odpowiedź od serwera bazy danych.'}, status=500)
+
+            transactions = response.data
+
+            if not transactions:
+                return JsonResponse({'transactions': [], 'message': 'Brak transakcji. Wprowadź swoją pierwszą transakcję.'}, status=200)
+
+            return JsonResponse({'transactions': transactions}, status=200)
+
+        except Exception as e:
+            print(f"Server Error: {e}")  # Loguje szczegóły błędu
+            return JsonResponse({'error': f'Błąd serwera: {str(e)}'}, status=500)
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            new_transaction = {
+                'transaction_owner': str(user_id),
+                'transaction_amount': data.get('amount'),
+                'transaction_category_id': data.get('categoryId'),
+                'transaction_payment_method': data.get('paymentMethod'),
+                'transaction_type': data.get('transactionType', 'expense'),
+                'transcation_data': data.get('date'),
+                'transaction_description': data.get('description'),
+                'transaction_status': data.get('status', 'Completed'),
+                'transaction_currency': data.get('currency', 'PLN'),
+            }
+
+            response = supabase.from_('Transactions').insert([new_transaction]).execute()
+            if response.error:
+                return JsonResponse({'error': response.error.message}, status=400)
+
+            return JsonResponse({'message': 'Transakcja została dodana pomyślnie.'}, status=201)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
