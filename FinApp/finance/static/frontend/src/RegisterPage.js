@@ -57,7 +57,6 @@ const RegisterPage = () => {
     <div className="register-container">
       <div className="form-wrapper">
         <img src="/finapplogo.png" alt="FinApp Logo" className="register-logo" />
-        <h2>Rejestracja użytkownika</h2>
         <form onSubmit={handleRegister}>
           <div className="form-group">
             <label>Nazwa użytkownika:</label>

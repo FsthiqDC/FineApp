@@ -22,6 +22,7 @@
 /* ===== Logo aplikacji ===== */
 .register-logo {
   width: 200px;
+  margin-bottom: 40px;
 }
 
 /* ===== Nagłówek ===== */
@@ -47,6 +48,7 @@ h2 {
 .form-group input {
   width: 100%;
   padding: 10px;
+  background-color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
@@ -54,26 +56,9 @@ h2 {
 }
 
 .form-group input:focus {
-  border-color: #7D4D27;
+  border-color: #ccc;
+  background-color: white;
   outline: none;
-}
-
-/* ===== Przycisk rejestracji ===== */
-.register-button {
-  background-color: #7D4D27;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 10px;
-  width: 100%;
-  transition: background 0.3s ease;
-}
-
-.register-button:hover {
-  background-color: #6C4221;
 }
 
 /* ===== Komunikaty ===== */

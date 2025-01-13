@@ -51,15 +51,16 @@
 }
 
 .form-group input:focus {
-  border-color: #7D4D27;
+  background-color: #007bff;
   outline: none;
 }
 
+
 /* ===== Przycisk logowania ===== */
 .login-button {
-  background-color: #7D4D27;
+  background-color: #007bff;
   color: white;
-  border: none;
+  border: 1px solid #0056b3;
   padding: 10px 15px;
   border-radius: 4px;
   font-size: 16px;
@@ -70,7 +71,7 @@
 }
 
 .login-button:hover {
-  background-color: #6C4221;
+  background-color: #0056b3;
 }
 
 /* ===== Komunikat statusu ===== */
@@ -82,9 +83,9 @@
 
 /* ===== Przycisk rejestracji ===== */
 .register-button {
-  background-color: #b28f69;
+  background-color: #007bff;
   color: white;
-  border: none;
+  border: 1px solid #0056b3;
   padding: 10px 15px;
   border-radius: 4px;
   font-size: 16px;
@@ -95,7 +96,7 @@
 }
 
 .register-button:hover {
-  background-color: #a57e5c;
+  background-color: #0056b3;
 }
 
 /* ===== Responsywność ===== */

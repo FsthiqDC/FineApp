@@ -1,102 +1,207 @@
 .transactions-container {
   font-family: 'Arial', sans-serif;
-  margin: 0 auto;
-  background-color: #f9fafc;
+  color: #333;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.transactions-content {
+  color: #333;
+  display: flex;
+  gap: 20px;
+  flex-wrap: nowrap;
+  margin: 20px;
+}
+
+.transaction-form,
+.filters {
+  color: #333;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.transactions-list {
+  color: #333;
+  border-radius: 8px;
+  background-color: white;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .transaction-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background-color: #fff;
-  padding: 30px;
-  margin: 40px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  max-width: 20%; /* 1/5 szerokości */
+}
+
+.filters {
+  flex: 1;
+  max-width: 20%; /* 1/5 szerokości */
+}
+
+.transactions-list {
+  flex: 3;
+  max-width: 60%; /* 3/5 szerokości */
+  overflow-y: auto;
+}
+
+.transaction-form h2,
+.filters h2,
+.transactions-list h2{
+  margin-bottom: 15px;
+  font-size: 1.5em;
 }
 
 .transaction-form input,
 .transaction-form select,
-.transaction-form textarea {
-  padding: 10px;
+.transaction-form textarea,
+.filters input,
+.filters select {
+  display: block;
+  width: calc(100% - 20px);
+  margin-bottom: 15px;
+  padding: 12px;
+  font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 14px;
-  width: calc(100% - 20px); /* Szerokość z uwzględnieniem paddingu kontenera */
-  height: 40px; /* Ustalona wysokość dla wszystkich pól */
-  box-sizing: border-box; /* Uwzględnij padding w szerokości */
+  background-color: #fff;
+  box-sizing: border-box;
+  width: 100%;
+  color: #333;
 }
 
 .transaction-form textarea {
-  min-height: calc(40px * 2 + 20px); /* Dwa razy wyższe od zwykłych pól + odstępy */
   resize: none;
-}
-
-.transaction-form .form-row {
-  display: flex;
-  gap: 10px;
-}
-
-.transaction-form .form-row > * {
-  flex: 1; /* Wszystkie elementy w wierszu mają równą szerokość */
+  height: 80px;
 }
 
 .add-transaction-button {
-  width: 120px; /* Szerokość przycisku */
-  height: 40px; /* Wysokość przycisku */
-  border-radius: 3px; /* Lekko zaokrąglone rogi */
-  background-color: white; /* Białe tło */
-  color: black; /* Czarny tekst */
-  font-size: 14px; /* Nowoczesny, minimalistyczny rozmiar tekstu */
-  font-weight: 500; /* Średnia grubość czcionki dla nowoczesnego wyglądu */
-  cursor: pointer; /* Ręka kursora */
-  text-align: center; /* Wyśrodkowanie tekstu */
-  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; /* Płynne przejścia */
-  margin: 20px auto 0; /* Wyśrodkowanie przycisku */
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #007bff;
+  border: 1px solid #0056b3;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .add-transaction-button:hover {
-  background-color: #f0f0f0; /* Jasnoszary kolor tła przy najechaniu */
-  color: black; /* Utrzymanie czarnego tekstu */
-  transform: translateY(-2px); /* Subtelne uniesienie przycisku */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Wyraźniejszy cień po najechaniu */
+  background-color: #0056b3;
 }
 
-.add-transaction-button:active {
-  transform: translateY(0); /* Powrót do normalnej pozycji po kliknięciu */
-  background-color: rgba(0, 0, 0, 0.05); /* Delikatne przyciemnienie tła */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Redukcja cienia */
-}
-
-.add-transaction-button:focus {
-  outline: none; /* Usunięcie domyślnego konturu */
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2); /* Subtelny czarny kontur dla dostępności */
-}
-
-.transactions-list {
-  margin-top: 20px;
+.filters select,
+.filters input {
+  display: block;
+  width: calc(100% - 20px);
+  margin-bottom: 15px;
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
 }
 
 .transaction-item {
-  background: #fff;
+  width: 100%; /* Pełna szerokość kontenera */
   padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
   margin-bottom: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtelny cień */
+  box-sizing: border-box;
 }
 
-.transaction-item p {
-  margin: 5px 0;
+.transaction-summary {
+  display: flex; /* Elementy w jednej linii */
+  justify-content: space-between; /* Elementy maksymalnie w lewo i prawo */
+  align-items: center; /* Wyrównanie pionowe */
+  width: 100%;
+}
+
+.summary-left {
+  display: flex;
+  gap: 10px; /* Odstęp między Kwotą, Datą i Kategorią */
+  align-items: center;
+}
+
+.transaction-amount {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.transaction-amount.expense {
+  color: #ff4d4d; /* Czerwony dla wydatków */
+}
+
+.transaction-amount.income {
+  color: #4caf50; /* Zielony dla przychodów */
+}
+
+.transaction-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center; /* Wyrównanie pionowe */
+  justify-content: flex-end; /* Maksymalnie w prawo */
+}
+
+.transaction-actions img {
+  width: 24px; /* Rozmiar ikon operacji */
+  height: 24px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.transaction-actions img:hover {
+  transform: scale(1.2); /* Powiększenie ikon przy najechaniu */
+}
+
+.transaction-details {
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
   font-size: 14px;
+  background-color: white;
+  line-height: 1.6;
 }
 
-.error-message {
-  color: red;
-  font-weight: bold;
+button, select, input {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  box-sizing: border-box;
 }
 
-.info-message {
-  color: #4caf50;
-  font-weight: bold;
+button:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.transactions-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.transactions-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.transaction-left{
+  width: 50%; /* 1/2 szerokości */
+  display: inline-flex;
+  gap: 20px;
+}
+
+.transaction-actions{
+  width: 50%; /* 1/2 szerokości */
+  display: inline-flex;
+  gap: 20px;
+  justify-content: right;
 }

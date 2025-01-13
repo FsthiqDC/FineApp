@@ -2,6 +2,7 @@
 .categories-container {
   font-family: 'Arial', sans-serif;
   margin: 0 auto;
+  color: #333;
   background-color: #fff; /* Białe tło */
   text-align: center;
 }
@@ -9,11 +10,9 @@
 /* Nagłówek strony */
 h2 {
   text-align: center;
-  margin-bottom: 20px;
-  color: #000; /* Czarny tekst */
+  color: #333; /* Czarny tekst */
   font-size: 2.2em;
   font-weight: bold;
-  text-transform: uppercase;
 }
 
 /* Wiadomości błędów */
@@ -37,7 +36,7 @@ h2 {
 /* Pojedyncza kategoria */
 .category-item {
   background: #fff;
-  border: 1px solid #E0C097; /* Jasno-złoty odcień */
+  border: 1px solid #ccc;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -54,14 +53,15 @@ h2 {
 .category-item:hover {
   transform: scale(1.03);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Zwiększenie cienia na hover */
-  border-color: #7D4D27; /* Ciemniejszy złoty odcień */
+  border: 1px solid #ccc;
 }
+
 
 /* Nagłówek kategorii */
 .category-item h3 {
   margin: 0 0 10px;
   font-size: 1.4em;
-  color: #000; /* Czarny tekst */
+  color: #333; /* Czarny tekst */
   font-weight: bold;
   overflow-wrap: break-word; /* Przenoszenie długiego tekstu */
   word-wrap: break-word;
@@ -72,30 +72,13 @@ h2 {
 .category-item p {
   margin: 0;
   font-size: 1em;
-  color: #000; /* Czarny tekst */
+  color: #333; /* Czarny tekst */
   text-align: justify;
   overflow-wrap: break-word;
   word-wrap: break-word;
   margin-top: 10px;
   line-height: 1.5;
   flex-grow: 1;
-}
-
-/* Przycisk "Dodaj kategorię" */
-.add-category-button {
-  background-color: #7D4D27; /* Złoty odcień */
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-  text-transform: uppercase;
-}
-
-.add-category-button:hover {
-  background-color: #5E3A1F; /* Ciemniejszy złoty odcień */
 }
 
 /* Responsywność */
