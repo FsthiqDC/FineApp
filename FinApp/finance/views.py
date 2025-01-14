@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN, HTTP_500_INTERNAL_SERVER_ERROR
+from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN, HTTP_500_INTERNAL_SERVER_ERROR,  HTTP_404_NOT_FOUND, HTTP_201_CREATED
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
@@ -260,49 +260,211 @@ def register_view(request):
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
-@csrf_exempt
 def transactions_view(request):
-    user_id = request.user.id
+    """
+    Widok obsługujący listę transakcji (GET) i dodawanie nowej transakcji (POST).
+    Z założenia 'transaction_owner' to user_id z App_Users, 
+    a request.user.id powinno się z nim pokrywać (obaj to str/UUID).
+    """
 
-    if request.method == 'GET':
-        try:
-            user_id = str(request.user.id)
-            response = supabase.from_('Transactions').select('*').eq('transaction_owner', user_id).execute()
+    print(f"DEBUG: Wywołano transactions_view z metodą {request.method}")
+    try:
+        # Pobieramy ID użytkownika z request.user.id
+        user_id = str(request.user.id)
+        print("DEBUG: Ustalono user_id =", user_id)
 
-            # Sprawdzanie czy response zawiera dane lub błąd
+        if request.method == 'GET':
+            print("DEBUG: Obsługa metody GET - pobieranie transakcji użytkownika.")
+            try:
+                response = (
+                    supabase
+                    .from_('Transactions')
+                    .select('*')
+                    .eq('transaction_owner', user_id)
+                    .execute()
+                )
+                print("DEBUG: Odpowiedź z supabase (GET):", response)
+            except Exception as e:
+                print("DEBUG: Błąd podczas pobierania transakcji:", e)
+                return Response({'error': f'Błąd serwera: {str(e)}'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+            # Weryfikacja, czy w ogóle dostaliśmy poprawny obiekt z polami
             if not response or not hasattr(response, 'data'):
-                return JsonResponse({'error': 'Nieoczekiwana odpowiedź od serwera bazy danych.'}, status=500)
+                print("DEBUG: Nieoczekiwana odpowiedź od serwera bazy danych (brak 'data').")
+                return Response({'error': 'Nieoczekiwana odpowiedź od serwera bazy danych.'}, status=500)
 
             transactions = response.data
+            print("DEBUG: transakcje pobrane z bazy:", transactions)
 
             if not transactions:
-                return JsonResponse({'transactions': [], 'message': 'Brak transakcji. Wprowadź swoją pierwszą transakcję.'}, status=200)
+                print("DEBUG: Brak transakcji dla danego użytkownika.")
+                return Response({'transactions': [], 'message': 'Brak transakcji.'}, status=HTTP_200_OK)
 
-            return JsonResponse({'transactions': transactions}, status=200)
+            print("DEBUG: Zwracam listę transakcji.")
+            return Response({'transactions': transactions}, status=HTTP_200_OK)
 
-        except Exception as e:
-            print(f"Server Error: {e}")  # Loguje szczegóły błędu
-            return JsonResponse({'error': f'Błąd serwera: {str(e)}'}, status=500)
+        elif request.method == 'POST':
+            print("DEBUG: Obsługa metody POST - dodawanie nowej transakcji.")
+            try:
+                data = json.loads(request.body)
+                print("DEBUG: Otrzymane dane JSON (POST):", data)
+                new_transaction = {
+                    'transaction_owner': user_id,
+                    'transaction_amount': data.get('amount'),
+                    'transaction_category_id': data.get('categoryId'),
+                    'transaction_payment_method': data.get('paymentMethod'),
+                    'transaction_type': data.get('transactionType', 'Wydatek'),
+                    'transcation_data': data.get('date'),
+                    'transaction_description': data.get('description'),
+                    'transaction_status': data.get('status', 'Ukończona'),
+                    'transaction_currency': data.get('currency', 'PLN'),
+                }
+                print("DEBUG: Zbudowany obiekt new_transaction:", new_transaction)
 
-    if request.method == 'POST':
+                # Wstawiamy transakcję
+                try:
+                    insert_resp = (
+                        supabase
+                        .from_('Transactions')
+                        .insert(new_transaction)
+                        .execute()
+                    )
+                    print("DEBUG: Odpowiedź z supabase (POST):", insert_resp)
+                except Exception as insert_err:
+                    print("DEBUG: Błąd podczas wstawiania transakcji:", insert_err)
+                    return Response({'error': str(insert_err)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+                # Zwracamy to, co chcesz - np. stały 'transaction_id': 123
+                print("DEBUG: Nowa transakcja została pomyślnie dodana.")
+                return Response({'transaction': new_transaction, 'transaction_id': 123}, status=HTTP_201_CREATED)
+
+            except Exception as e:
+                print("DEBUG: Błąd przy odczytywaniu/parsowaniu danych POST:", e)
+                return Response({'error': str(e)}, status=500)
+
+        # Dla innych metod zwracamy 405 (Method Not Allowed)
+        print(f"DEBUG: Metoda {request.method} nieobsługiwana.")
+        return Response({"error": "Method Not Allowed"}, status=405)
+
+    except Exception as e:
+        print("DEBUG: Błąd ogólny w transactions_view:", e)
+        return Response({"error": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def transaction_detail_view(request, transaction_id):
+    """
+    Widok obsługujący pobieranie, edycję i usuwanie konkretnej transakcji,
+    identyfikowanej przez UUID (transaction_id).
+    """
+
+    print(f"DEBUG: Wywołano transaction_detail_view z metodą {request.method} i ID = {transaction_id}")
+    try:
+        # ----------------------------------
+        # 1. Pobieranie transakcji
+        # ----------------------------------
+        print("DEBUG: Próba pobrania transakcji z bazy...")
         try:
+            response = (
+                supabase
+                .table('Transactions')
+                .select('*')
+                .eq('transaction_id', str(transaction_id))
+                .single()
+                .execute()
+            )
+            print("DEBUG: Odpowiedź z supabase (GET):", response)
+        except Exception as err:
+            print("DEBUG: Błąd podczas pobierania transakcji:", err)
+            return Response({"error": str(err)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Jeżeli w odpowiedzi brak data (None lub pusty), to transakcja nie istnieje
+        if not response.data:
+            print("DEBUG: Brak transakcji o podanym ID w bazie")
+            return Response({"error": "Transakcja nie znaleziona"}, status=HTTP_404_NOT_FOUND)
+
+        transaction = response.data
+        print("DEBUG: Pobrana transakcja:", transaction)
+
+        # ----------------------------------
+        # 2. (Opcjonalnie) sprawdzenie właściciela
+        # ----------------------------------
+        print("DEBUG: Sprawdzam właściciela transakcji...")
+        if str(transaction['transaction_owner']) != str(request.user.id):
+            print("DEBUG: Użytkownik nie jest właścicielem transakcji!")
+            return Response({"error": "Brak dostępu do tej transakcji"}, status=HTTP_403_FORBIDDEN)
+        print("DEBUG: Użytkownik jest właścicielem transakcji.")
+
+        # ----------------------------------
+        # 3. Obsługa metod GET / PUT / DELETE
+        # ----------------------------------
+        if request.method == 'GET':
+            print("DEBUG: Obsługa metody GET - zwracam szczegóły transakcji.")
+            return Response({"transaction": transaction}, status=HTTP_200_OK)
+
+        if request.method == 'PUT':
+            print("DEBUG: Obsługa metody PUT - aktualizacja transakcji.")
             data = json.loads(request.body)
-            new_transaction = {
-                'transaction_owner': str(user_id),
-                'transaction_amount': data.get('amount'),
-                'transaction_category_id': data.get('categoryId'),
-                'transaction_payment_method': data.get('paymentMethod'),
-                'transaction_type': data.get('transactionType', 'expense'),
-                'transcation_data': data.get('date'),
-                'transaction_description': data.get('description'),
-                'transaction_status': data.get('status', 'Completed'),
-                'transaction_currency': data.get('currency', 'PLN'),
+            print("DEBUG: Otrzymane dane JSON:", data)
+            updated_transaction = {
+                'transaction_amount': data.get('amount', transaction['transaction_amount']),
+                'transaction_category_id': data.get('categoryId', transaction['transaction_category_id']),
+                'transaction_payment_method': data.get('paymentMethod', transaction['transaction_payment_method']),
+                'transaction_type': data.get('transactionType', transaction['transaction_type']),
+                'transaction_status': data.get('status', transaction['transaction_status']),
+                'transcation_data': data.get('date', transaction['transcation_data']),
+                'transaction_description': data.get('description', transaction['transaction_description']),
+                'transaction_currency': data.get('currency', transaction['transaction_currency']),
             }
+            print("DEBUG: Zbudowany obiekt updated_transaction:", updated_transaction)
+            try:
+                update_resp = (
+                    supabase
+                    .table('Transactions')
+                    .update(updated_transaction)
+                    .eq('transaction_id', str(transaction_id))
+                    .execute()
+                )
+                print("DEBUG: Odpowiedź z supabase (PUT):", update_resp)
+            except Exception as err:
+                print("DEBUG: Błąd podczas aktualizacji transakcji:", err)
+                return Response({"error": str(err)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
-            response = supabase.from_('Transactions').insert([new_transaction]).execute()
-            if response.error:
-                return JsonResponse({'error': response.error.message}, status=400)
+            if not update_resp.data:
+                # Nic nie zaktualizowano
+                print("DEBUG: Nic nie zostało zaktualizowane (update_resp.data jest puste).")
+                return Response({"message": "Zaktualizowano 0 rekordów."}, status=HTTP_200_OK)
 
-            return JsonResponse({'message': 'Transakcja została dodana pomyślnie.'}, status=201)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            print("DEBUG: Transakcja została pomyślnie zaktualizowana.")
+            return Response({"message": "Transakcja zaktualizowana pomyślnie"}, status=HTTP_200_OK)
+
+        if request.method == 'DELETE':
+            print("DEBUG: Obsługa metody DELETE - usuwanie transakcji.")
+            try:
+                print("DEBUG: wchodzę w DELETE, wysyłam zapytanie do bazy...")
+                delete_resp = (
+                    supabase
+                    .table('Transactions')
+                    .delete()
+                    .eq('transaction_id', str(transaction_id))
+                    .execute()
+                )
+                print("DEBUG: supabase DELETE zapytanie poszło, oto wynik:")
+                print("DEBUG delete_resp:", delete_resp)
+            except Exception as err:
+                print("DEBUG: Błąd podczas usuwania transakcji:", err)
+                return Response({"error": str(err)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+            # if not delete_resp.data:
+            #     print("DEBUG: Nie usunięto żadnego rekordu (delete_resp.data puste).")
+            #     return Response({"message": "Nie usunięto żadnego rekordu."}, status=HTTP_200_OK)
+
+            print("DEBUG: Transakcja została pomyślnie usunięta.")
+            return Response({"message": "Transakcja usunięta pomyślnie"}, status=HTTP_200_OK)
+
+        # Jeśli ktoś wywoła inną metodę, zwracamy 405
+        return Response({"error": "Method not allowed"}, status=405)
+
+    except Exception as e:
+        print("Błąd ogólny:", e)
+        return Response({"error": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
