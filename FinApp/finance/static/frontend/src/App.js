@@ -6,10 +6,12 @@ import HomePage from './HomePage';
 import CategoriesPage from './CategoriesPage';
 import TransactionsPage from './TransactionsPage'; // ✅ Import TransactionsPage
 import ProtectedRoute from './ProtectedRoute';
+import CookiesBanner from './components/Cookies';
 
 function App() {
   return (
     <Router>
+      <CookiesBanner />
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />

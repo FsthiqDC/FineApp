@@ -202,6 +202,7 @@ button:hover {
 .transaction-left {
   width: 50%;
   display: inline-flex;
+  justify-content: space-between;
   gap: 20px;
 }
 
@@ -244,7 +245,7 @@ button:hover {
 
 /* Formularz w modalu edycji */
 .modal-content form {
-  display: flex;
+  display: inline-block;
   flex-direction: column;
   gap: 10px;
   width: 100%;
@@ -256,9 +257,9 @@ button:hover {
   font-size: 14px;
 }
 
-.modal-content form input,
-.modal-content form select,
-.modal-content form textarea {
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
   width: 100%;
   box-sizing: border-box;
   padding: 10px;
@@ -268,9 +269,10 @@ button:hover {
   background-color: #fff;
 }
 
-.modal-content form textarea {
+.modal-content textarea {
   resize: none;
   height: 120px; /* Możesz dostosować */
+  width: 100%;
 }
 
 .modal-content button {

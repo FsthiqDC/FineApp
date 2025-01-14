@@ -479,6 +479,8 @@ const TransactionsPage = () => {
           {filteredTransactions.map((transaction) => (
             <div key={transaction.transaction_id} className="transaction-item">
               <div className="transaction-left">
+                <span>{transaction.transcation_data}</span>
+                <span>{transaction.category_name}</span>
                 <span
                   className={`transaction-amount ${
                     transaction.transaction_type === 'Wydatek'
@@ -489,8 +491,6 @@ const TransactionsPage = () => {
                   {transaction.transaction_type === 'Wydatek' ? '-' : '+'}
                   {transaction.transaction_amount} {transaction.transaction_currency}
                 </span>
-                <span>{transaction.transcation_data}</span>
-                <span>{transaction.category_name}</span>
               </div>
               <div className="transaction-actions">
                 <img

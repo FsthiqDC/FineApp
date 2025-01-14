@@ -19,6 +19,13 @@
   border: 1px solid #e0e0e0;
 }
 
+/* ===== Nagłówek strony logowania ===== */
+.login-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
 /* ===== Logo aplikacji ===== */
 .login-logo {
   width: 200px;
@@ -46,15 +53,26 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   box-sizing: border-box;
 }
 
 .form-group input:focus {
-  background-color: #007bff;
-  outline: none;
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  background-color: #fff; /* Zostaw białe tło, aby zachować czytelność */
 }
 
+/* ===== Pamiętaj mnie (checkbox) ===== */
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+}
 
 /* ===== Przycisk logowania ===== */
 .login-button {
@@ -66,10 +84,24 @@
   font-size: 16px;
   cursor: pointer;
   margin-top: 10px;
+  margin-bottom: 5px; /* Mniejszy odstęp do następnego przycisku */
   width: 100%;
   transition: background 0.3s ease;
 }
 
+.register-button {
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #0056b3;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+.register-button:hover,
 .login-button:hover {
   background-color: #0056b3;
 }
@@ -81,22 +113,18 @@
   color: #7D4D27;
 }
 
-/* ===== Przycisk rejestracji ===== */
-.register-button {
-  background-color: #007bff;
-  color: white;
-  border: 1px solid #0056b3;
-  padding: 10px 15px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
+/* ===== Link „Zapomniałeś hasła?” ===== */
+.forgot-password {
   margin-top: 10px;
-  width: 100%;
-  transition: background 0.3s ease;
 }
 
-.register-button:hover {
-  background-color: #0056b3;
+.forgot-password a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
 }
 
 /* ===== Responsywność ===== */

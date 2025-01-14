@@ -19,18 +19,17 @@
   border: 1px solid #e0e0e0;
 }
 
+/* ===== Nagłówek ===== */
+.register-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
 /* ===== Logo aplikacji ===== */
 .register-logo {
   width: 200px;
-  margin-bottom: 40px;
-}
-
-/* ===== Nagłówek ===== */
-h2 {
   margin-bottom: 20px;
-  color: #7D4D27;
-  font-size: 1.5em;
-  font-weight: bold;
 }
 
 /* ===== Pola formularza ===== */
@@ -48,24 +47,56 @@ h2 {
 .form-group input {
   width: 100%;
   padding: 10px;
-  background-color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .form-group input:focus {
-  border-color: #ccc;
-  background-color: white;
+  border-color: #007bff;
   outline: none;
+}
+
+/* ===== Checkbox ===== */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-group input {
+  margin-right: 10px;
+}
+
+/* ===== Przycisk rejestracji ===== */
+.register-button {
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #0056b3;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+.register-button:hover {
+  background-color: #0056b3;
 }
 
 /* ===== Komunikaty ===== */
 .message {
   margin-top: 15px;
   font-size: 14px;
-  color: #7D4D27;
+  color: #28a745;
+}
+
+.error-message {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #dc3545;
 }
 
 /* ===== Responsywność ===== */
@@ -75,3 +106,63 @@ h2 {
     padding: 20px;
   }
 }
+
+/* ===== Opis strony ===== */
+.description {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+/* ===== Kontener hasła ===== */
+.password-container {
+  position: relative;
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 10px; /* Miejsce na ikonę oka */
+}
+
+/* ===== Wskaźnik siły hasła ===== */
+.password-strength {
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.password-strength.słabe {
+  color: #dc3545;
+}
+
+.password-strength.średnie {
+  color: #ffc107;
+}
+
+.password-strength.silne {
+  color: #28a745;
+}
+
+/* ===== Wymagania hasła ===== */
+.password-requirements {
+  font-size: 11px;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* ===== Link do logowania ===== */
+.login-link {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+

@@ -1,0 +1,49 @@
+.cookies-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    padding: 20px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .cookies-banner a {
+    color: #007bff;
+    text-decoration: underline;
+  }
+  
+  .cookies-actions {
+    margin-top: 10px;
+  }
+  
+  .cookies-accept,
+  .cookies-reject {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cookies-reject {
+    background-color: #dc3545;
+  }
+  
+  .cookies-accept:hover {
+    background-color: #0056b3;
+  }
+  
+  .cookies-reject:hover {
+    background-color: #c82333;
+  }
+  
