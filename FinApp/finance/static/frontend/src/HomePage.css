@@ -37,21 +37,64 @@
 
 .chart-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  margin-bottom: 10px;
+}
+
+.chart-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .filter-container {
   display: flex;
   gap: 8px;
+  align-items: center;
 }
 
-.filter-container input {
-  padding: 6px;
-  font-size: 14px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.filter-container.column {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
 }
+
+/* Styl przycisku */
+.button {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: 1px solid #0056b3;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+/* Styl przycisków spójny z resztą aplikacji */
+.button {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: 1px solid #0056b3;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
 
 .error-message {
   color: red;

@@ -16,8 +16,9 @@ from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN, HTTP_500_INTE
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
-import jwt, os, json, bcrypt, logging
-import calendar
+import jwt, os, json, bcrypt, logging, re, calendar
+from datetime import datetime
+from isoweek import Week
 
 logger = logging.getLogger(__name__)
 
@@ -74,11 +75,19 @@ def categories_view(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def home_view(request):
-    auth_header = request.headers.get('Authorization')
-    if not auth_header:
-        return Response({"error": "Brak tokena autoryzacyjnego"}, status=HTTP_403_FORBIDDEN)
-
+    """
+    Widok zwracający różne statystyki finansowe użytkownika na podstawie filtrów:
+    - year=YYYY
+    - month=YYYY-MM
+    - chart=weekly_averages lub sum_vs_count
+    - week=YYYY-WNN (np. 2025-W03) – dla średnich wydatków tygodniowych
+    """
     try:
+        # Autoryzacja
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return Response({"error": "Brak tokena autoryzacyjnego"}, status=HTTP_403_FORBIDDEN)
+
         prefix, token = auth_header.split(' ')
         if prefix.lower() != 'bearer':
             return Response({"error": "Nieprawidłowy prefiks tokena"}, status=HTTP_403_FORBIDDEN)
@@ -86,53 +95,132 @@ def home_view(request):
         payload = jwt.decode(token, SUPABASE_KEY, algorithms=['HS256'])
         user_id = payload.get('user_id')
 
-        # Pobierz transakcje użytkownika
-        transactions_response = supabase.table('Transactions').select('*').eq('transaction_owner', user_id).execute()
-        transactions = transactions_response.data
+        # Parametry zapytania
+        year_str = request.GET.get('year')     # np. '2025'
+        month_str = request.GET.get('month')   # np. '2025-01'
+        chart_type = request.GET.get('chart')  # np. 'weekly_averages' lub 'sum_vs_count'
+        week_str = request.GET.get('week')     # np. '2025-W03'
+
+        # Wyniki podstawowe
+        results = {
+            "yearly_expenses": [0]*12,
+            "monthly_expenses": [0]*31,
+            "expense_categories": {},
+            "incomes_vs_expenses": {"incomes": [0]*12, "expenses": [0]*12}
+        }
+
+        # Zapytanie do Supabase (transakcje danego użytkownika)
+        query = supabase.table('Transactions').select('*').eq('transaction_owner', user_id)
+
+        # 1. Filtrowanie po tygodniu (jeśli chart_type == 'weekly_averages')
+        if week_str and chart_type == "weekly_averages":
+            # Oczekujemy formatu "YYYY-WNN" np. "2025-W03"
+            match = re.match(r"^(\d{4})-W(\d{2})$", week_str)
+            if match:
+                year_w = int(match.group(1))
+                week_n = int(match.group(2))
+                # Ustal początek i koniec tygodnia (poniedziałek-niedziela)
+                w = Week(year_w, week_n)
+                start_of_week = w.monday().strftime("%Y-%m-%d")
+                end_of_week   = w.sunday().strftime("%Y-%m-%d")
+                query = query.gte('transcation_data', start_of_week).lte('transcation_data', end_of_week)
+
+        # 2. Filtrowanie wg roku
+        if year_str:
+            start_of_year = f"{year_str}-01-01"
+            end_of_year   = f"{year_str}-12-31"
+            query = query.gte('transcation_data', start_of_year).lte('transcation_data', end_of_year)
+
+        # 3. Filtrowanie wg miesiąca
+        if month_str:
+            try:
+                y_m, m_m = month_str.split('-')
+                _, last_day = calendar.monthrange(int(y_m), int(m_m))
+                start_of_month = f"{y_m}-{m_m}-01"
+                end_of_month   = f"{y_m}-{m_m}-{last_day}"
+                query = query.gte('transcation_data', start_of_month).lte('transcation_data', end_of_month)
+            except:
+                pass
+
+        # Pobranie transakcji
+        transactions_response = query.execute()
+        transactions = transactions_response.data or []
 
         # Pobierz kategorie
-        categories_response = supabase.table('Categories').select('*').execute()
-        categories = {category['category_id']: category['category_name'] for category in categories_response.data}
+        cat_resp = supabase.table('Categories').select('*').execute()
+        categories_data = cat_resp.data or []
+        categories_map = {c['category_id']: c['category_name'] for c in categories_data}
 
-        if not transactions:
-            return Response({
-                "yearly_expenses": [0] * 12,
-                "monthly_expenses": [0] * 31,
-                "expense_categories": {},
-                "incomes_vs_expenses": {"incomes": [0] * 12, "expenses": [0] * 12}
-            }, status=HTTP_200_OK)
+        # Jeśli istnieją jakiekolwiek transakcje – zlicz statystyki
+        if transactions:
+            yearly_expenses = [0]*12
+            monthly_expenses = [0]*31
+            expense_categories = {}
+            incomes_vs_expenses = {"incomes": [0]*12, "expenses": [0]*12}
 
-        yearly_expenses = [0] * 12
-        monthly_expenses = [0] * 31
-        expense_categories = {}
-        incomes_vs_expenses = {"incomes": [0] * 12, "expenses": [0] * 12}
+            for t in transactions:
+                amount = t['transaction_amount']
+                date_str = t['transcation_data']
+                date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+                m_index = date_obj.month - 1
+                d_index = date_obj.day - 1
 
-        for transaction in transactions:
-            amount = transaction['transaction_amount']
-            date = datetime.strptime(transaction['transcation_data'], "%Y-%m-%d")
-            month_index = date.month - 1
-            day_index = date.day - 1
+                if t['transaction_type'] == 'Wydatek':
+                    yearly_expenses[m_index] += amount
+                    if d_index < 31:
+                        monthly_expenses[d_index] += amount
+                    cat_name = categories_map.get(t['transaction_category_id'], "Nieznana kategoria")
+                    expense_categories[cat_name] = expense_categories.get(cat_name, 0) + amount
+                    incomes_vs_expenses['expenses'][m_index] += amount
+                else:
+                    incomes_vs_expenses['incomes'][m_index] += amount
 
-            if transaction['transaction_type'] == 'Wydatek':
-                yearly_expenses[month_index] += amount
-                monthly_expenses[day_index] += amount
-                category_id = transaction['transaction_category_id']
-                category_name = categories.get(category_id, "Nieznana kategoria")
-                expense_categories[category_name] = expense_categories.get(category_name, 0) + amount
-                incomes_vs_expenses['expenses'][month_index] += amount
-            else:
-                incomes_vs_expenses['incomes'][month_index] += amount
+            results["yearly_expenses"] = yearly_expenses
+            results["monthly_expenses"] = monthly_expenses
+            results["expense_categories"] = expense_categories
+            results["incomes_vs_expenses"] = incomes_vs_expenses
 
-        return Response({
-            "yearly_expenses": yearly_expenses,
-            "monthly_expenses": monthly_expenses,
-            "expense_categories": expense_categories,
-            "incomes_vs_expenses": incomes_vs_expenses
-        }, status=HTTP_200_OK)
+        # 4. Dodatkowe wykresy
+        weekly_averages = [0]*7
+        if chart_type == "weekly_averages" and transactions:
+            # Podział wg dayOfWeek: pon=0, niedz=6
+            counts = [0]*7
+            for t in transactions:
+                if t['transaction_type'] == 'Wydatek':
+                    date_obj = datetime.strptime(t['transcation_data'], "%Y-%m-%d")
+                    dow = date_obj.weekday()  # pon=0
+                    weekly_averages[dow] += t['transaction_amount']
+                    counts[dow] += 1
+            # Średnia
+            for i in range(7):
+                if counts[i] > 0:
+                    weekly_averages[i] /= counts[i]
+
+        sum_vs_count = {"sum": 0, "count": 0}
+        if chart_type == "sum_vs_count" and transactions:
+            for t in transactions:
+                if t['transaction_type'] == 'Wydatek':
+                    sum_vs_count["sum"] += t['transaction_amount']
+                sum_vs_count["count"] += 1
+
+        data_to_return = {
+            "yearly_expenses": results["yearly_expenses"],
+            "monthly_expenses": results["monthly_expenses"],
+            "expense_categories": results["expense_categories"],
+            "incomes_vs_expenses": results["incomes_vs_expenses"],
+        }
+
+        if chart_type == "weekly_averages":
+            data_to_return["weekly_averages"] = weekly_averages
+
+        if chart_type == "sum_vs_count":
+            data_to_return["sum_vs_count"] = sum_vs_count
+
+        return Response(data_to_return, status=200)
 
     except Exception as e:
         return Response({"error": f"Błąd serwera: {str(e)}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
-
+    
 @csrf_exempt
 def login_user(request):
     if request.method != 'POST':
