@@ -4,6 +4,7 @@ import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
 import HomePage from './HomePage';
 import CategoriesPage from './CategoriesPage';
+import SettingsPage from './SettingsPage';
 import TransactionsPage from './TransactionsPage'; // ✅ Import TransactionsPage
 import ProtectedRoute from './ProtectedRoute';
 import CookiesBanner from './components/Cookies';
@@ -39,6 +40,14 @@ function App() {
           element={
             <ProtectedRoute>
               <TransactionsPage />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
             </ProtectedRoute>
           }
         />

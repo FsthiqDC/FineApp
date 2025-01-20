@@ -43,7 +43,6 @@ const Navbar = () => {
         <span className="user-text">Moje Konto</span>
         {isUserMenuOpen && (
           <div className="user-menu">
-            <a href="/profile">Mój profil</a>
             <a href="/settings">Ustawienia konta</a>
             <a onClick={handleLogout} className="logout-button">Wyloguj</a>
           </div>

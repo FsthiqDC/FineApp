@@ -35,6 +35,30 @@
   font-weight: bold;
 }
 
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-container {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-container input {
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
 /* Jeśli błąd autoryzacji */
 .error-message {
   color: red;
@@ -48,3 +72,4 @@
     flex: 1 1 100%;
   }
 }
+

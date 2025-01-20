@@ -1,7 +1,14 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #f5f7fa; /* To samo tło co w .transactions-container */
+}
+
 .transactions-container {
   font-family: 'Arial', sans-serif;
   color: #333;
-  background-color: #fff;
+  background-color: #f5f7fa;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -26,7 +33,7 @@
 .transactions-list {
   color: #333;
   border-radius: 8px;
-  background-color: white;
+  background-color: f5f7fa;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -213,7 +220,7 @@ button:hover {
   justify-content: right;
 }
 
-/* ========= MODALE ========= */
+/* Modal */
 .modal {
   position: fixed;
   top: 0;
@@ -229,21 +236,20 @@ button:hover {
 
 .modal-content {
   background: #fff;
-  width: 400px; /* Szerokość modala */
-  padding: 20px; /* Podstawowy padding wokół zawartości */
+  width: 400px;
+  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  font-size: 14px; /* Mniejszy tekst w modalu */
+  font-size: 14px;
   box-sizing: border-box;
 }
 
 .modal-content h2 {
   margin-top: 0;
   margin-bottom: 15px;
-  font-size: 1.2em; /* Nieco mniejszy nagłówek */
+  font-size: 1.2em;
 }
 
-/* Formularz w modalu edycji */
 .modal-content form {
   display: inline-block;
   flex-direction: column;
@@ -271,7 +277,7 @@ button:hover {
 
 .modal-content textarea {
   resize: none;
-  height: 120px; /* Możesz dostosować */
+  height: 120px;
   width: 100%;
 }
 
@@ -291,23 +297,58 @@ button:hover {
   background-color: #0056b3;
 }
 
-/* ========== RWD (responsywność) ========== */
+/* PAGINACJA */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
 
-/* Ekrany o szerokości do 992px (np. tablet w pionie) */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center; /* Wyśrodkuj przyciski paginacji */
+}
+
+.pagination button {
+  padding: 10px 15px;
+  font-size: 14px;
+  background-color: #007bff; /* Główny kolor przycisku */
+  border: 1px solid #0056b3; /* Obramowanie */
+  border-radius: 4px;
+  color: #fff; /* Kolor tekstu */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:hover {
+  background-color: #0056b3; /* Kolor przycisku po najechaniu */
+}
+
+.pagination button:disabled {
+  background-color: #e9ecef; /* Kolor przycisku nieaktywnego */
+  border-color: #ccc;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* ========== RWD (responsywność) ========== */
 @media (max-width: 992px) {
   .transactions-content {
-    flex-wrap: wrap; /* Pozwala przejść elementom do nowej linii */
+    flex-wrap: wrap;
   }
 
   .transaction-form,
   .filters,
   .transactions-list {
     max-width: 100%;
-    flex: 1 1 100%; /* Zajmują pełną szerokość */
+    flex: 1 1 100%;
   }
 }
 
-/* Ekrany do 768px (np. tablet/telefony) */
 @media (max-width: 768px) {
   .transactions-content {
     margin: 10px;
@@ -332,7 +373,6 @@ button:hover {
   }
 }
 
-/* Ekrany do 480px (np. telefony mniejsze) */
 @media (max-width: 480px) {
   .transaction-form h2,
   .filters h2,

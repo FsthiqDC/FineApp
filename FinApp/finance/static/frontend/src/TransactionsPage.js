@@ -4,7 +4,7 @@ import './TransactionsPage.css';
 import axios from 'axios';
 
 const TransactionsPage = () => {
-  /* Stany przechowujące listy transakcji i kategorii */
+  /* ========== STANY ========== */
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -20,14 +20,15 @@ const TransactionsPage = () => {
     currency: 'PLN',
   });
 
-  /* Filtry i sortowanie */
+  /* Filtry i sortowanie (lokalne), + filtr "month" (serwerowy) */
   const [filters, setFilters] = useState({
     categoryId: '',
     paymentMethod: '',
     transactionType: '',
     status: '',
     searchText: '',
-    sortKey: '',
+    sortKey: 'newest',
+    month: '', // <-- Dodane pole do filtrowania po miesiącu
   });
 
   const [filteredTransactions, setFilteredTransactions] = useState([]);
@@ -53,82 +54,133 @@ const TransactionsPage = () => {
   /* Stan do rozwijania / zwijania szczegółów transakcji */
   const [expandedTransactionId, setExpandedTransactionId] = useState(null);
 
+  /* ========== PAGINACJA ========== */
+  const [currentPage, setCurrentPage] = useState(1); // aktualna strona
+  const [totalPages, setTotalPages] = useState(1);   // łączna liczba stron
+  const perPage = 10;                                // ilość transakcji na stronę (możesz dostosować)
+
   /* ------------------------------------
-     1. Pobieranie kategorii i transakcji 
+     1. Pobieranie kategorii i transakcji (z uwzgl. paginacji i filtra month)
      ------------------------------------ */
-  useEffect(() => {
-    const fetchCategoriesAndTransactions = async () => {
-      try {
-        const token = localStorage.getItem('authToken');
-        const [categoriesResponse, transactionsResponse] = await Promise.all([
-          axios.get('http://127.0.0.1:8000/api/categories/', {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get('http://127.0.0.1:8000/api/transactions/', {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+  const fetchCategoriesAndTransactions = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
 
-        /* Mapowanie ID kategorii na nazwę, by w transakcjach móc wyświetlać bezpośrednio nazwy */
-        const categoryMap = {};
-        categoriesResponse.data.categories.forEach((cat) => {
-          categoryMap[cat.category_id] = cat.category_name;
-        });
+      // Wyciągamy wartości z filters, które mają być przekazywane do serwera
+      const { month } = filters;
 
-        /* Łączenie danych o transakcji z nazwą kategorii */
-        const enrichedTransactions = transactionsResponse.data.transactions.map((transaction) => ({
-          ...transaction,
-          category_name: categoryMap[transaction.transaction_category_id] || 'Brak kategorii',
-        }));
-
-        setCategories(categoriesResponse.data.categories || []);
-        setTransactions(enrichedTransactions || []);
-        setFilteredTransactions(enrichedTransactions || []);
-      } catch (error) {
-        console.error('Błąd podczas pobierania danych:', error);
+      // Parametry zapytania GET do pobrania transakcji
+      // page – bieżąca strona
+      // per_page – ile wyników na stronę
+      // month – jeśli ustawione, np. "2023-12"
+      const transactionsParams = {
+        page: currentPage,
+        per_page: perPage,
+      };
+      if (month) {
+        transactionsParams.month = month;
       }
-    };
+
+      const [categoriesResponse, transactionsResponse] = await Promise.all([
+        axios.get('http://127.0.0.1:8000/api/categories/', {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get('http://127.0.0.1:8000/api/transactions/', {
+          headers: { Authorization: `Bearer ${token}` },
+          params: transactionsParams,
+        }),
+      ]);
+
+      /* Mapowanie ID kategorii na nazwę, by w transakcjach móc wyświetlać bezpośrednio nazwy */
+      const categoryMap = {};
+      categoriesResponse.data.categories.forEach((cat) => {
+        categoryMap[cat.category_id] = cat.category_name;
+      });
+
+      /* Zakładamy, że backend zwraca w transactionsResponse.data:
+         {
+           transactions: [...],
+           total_pages: X,
+           current_page: Y
+         }
+      */
+      const backendTransactions = transactionsResponse.data.transactions || [];
+      const enrichedTransactions = backendTransactions.map((transaction) => ({
+        ...transaction,
+        category_name:
+          categoryMap[transaction.transaction_category_id] || 'Brak kategorii',
+      }));
+
+      setCategories(categoriesResponse.data.categories || []);
+      setTransactions(enrichedTransactions);
+
+      // Ustawienie paginacji na podstawie wartości z serwera
+      setTotalPages(transactionsResponse.data.total_pages || 1);
+      setCurrentPage(transactionsResponse.data.current_page || 1);
+
+      // Na starcie, po pobraniu, od razu ustawiamy filteredTransactions na pełny zestaw
+      setFilteredTransactions(enrichedTransactions);
+    } catch (error) {
+      console.error('Błąd podczas pobierania danych:', error);
+    }
+  };
+
+  // Pobieramy dane za każdym razem, gdy zmieni się currentPage lub filters.month.
+  useEffect(() => {
     fetchCategoriesAndTransactions();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, filters.month]);
 
   /* ------------------------------------
-     2. Filtrowanie i sortowanie
+     2. Filtrowanie (lokalne) i sortowanie
      ------------------------------------ */
   useEffect(() => {
+    // Filtr "month" został przeniesiony na serwer, więc tutaj go nie obejmujemy.
+    // Cała reszta filtrów dalej działa lokalnie na liście transactions.
+
     const applyFiltersAndSort = () => {
       let filtered = [...transactions];
 
-      /* Filtrowanie */
-      if (filters.categoryId) {
+      const {
+        categoryId,
+        paymentMethod,
+        transactionType,
+        status,
+        searchText,
+        sortKey,
+      } = filters;
+
+      // Filtrowanie
+      if (categoryId) {
         filtered = filtered.filter(
-          (t) => t.transaction_category_id === filters.categoryId
+          (t) => t.transaction_category_id === categoryId
         );
       }
-      if (filters.paymentMethod) {
+      if (paymentMethod) {
         filtered = filtered.filter(
-          (t) => t.transaction_payment_method === filters.paymentMethod
+          (t) => t.transaction_payment_method === paymentMethod
         );
       }
-      if (filters.transactionType) {
+      if (transactionType) {
         filtered = filtered.filter(
-          (t) => t.transaction_type === filters.transactionType
+          (t) => t.transaction_type === transactionType
         );
       }
-      if (filters.status) {
+      if (status) {
         filtered = filtered.filter(
-          (t) => t.transaction_status === filters.status
+          (t) => t.transaction_status === status
         );
       }
-      if (filters.searchText) {
+      if (searchText) {
         filtered = filtered.filter((t) =>
           t.transaction_description
             .toLowerCase()
-            .includes(filters.searchText.toLowerCase())
+            .includes(searchText.toLowerCase())
         );
       }
 
-      /* Sortowanie - wg najmniejszych / największych kwot oraz najstarszych / najmłodszych dat */
-      switch (filters.sortKey) {
+      // Sortowanie - wg kwot i dat
+      switch (sortKey) {
         case 'lowest':
           filtered.sort((a, b) => a.transaction_amount - b.transaction_amount);
           break;
@@ -150,7 +202,7 @@ const TransactionsPage = () => {
           );
           break;
         default:
-          /* Brak sortowania */
+          // Brak sortowania
           break;
       }
 
@@ -184,31 +236,24 @@ const TransactionsPage = () => {
       );
 
       if (response.status === 201) {
-        /* Tworzymy obiekt nowej transakcji - 
-           w zależności od tego, co faktycznie zwraca backend, 
-           trzeba uzupełnić odpowiednie pola */
+        /* Załóżmy, że backend zwraca w polu `transaction` nowo utworzony obiekt
+           i dodatkowe pole `transaction_id` (jak w kodzie Django). */
+        const newBackendTrans = response.data.transaction;
         const newTransaction = {
-          /* Przy założeniu, że backend zwraca np. response.data.transaction */
-          ...response.data.transaction,
+          // Łączymy dane z backendu i to co mamy w formData
+          ...newBackendTrans,
           transaction_id: response.data.transaction_id,
-          transaction_amount: formData.amount,
-          transaction_category_id: formData.categoryId,
-          transaction_payment_method: formData.paymentMethod,
-          transaction_type: formData.transactionType,
-          transcation_data: formData.date,
-          transaction_description: formData.description,
-          transaction_status: formData.status,
-          transaction_currency: formData.currency,
           category_name:
             categories.find(
               (cat) => cat.category_id === formData.categoryId
             )?.category_name || 'Brak kategorii',
         };
 
+        // Dodajemy nową transakcję do stanu
         setTransactions((prev) => [...prev, newTransaction]);
         setFilteredTransactions((prev) => [...prev, newTransaction]);
 
-        /* Czyszczenie formularza */
+        // Reset formularza
         setFormData({
           amount: '',
           categoryId: '',
@@ -247,7 +292,6 @@ const TransactionsPage = () => {
 
   const confirmDelete = async () => {
     if (!transactionToDelete) return;
-
     try {
       const token = localStorage.getItem('authToken');
       await axios.delete(
@@ -256,7 +300,7 @@ const TransactionsPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      /* Po udanym usunięciu - aktualizujemy stan */
+      // Usuwamy z lokalnego stanu
       setTransactions((prev) =>
         prev.filter((t) => t.transaction_id !== transactionToDelete.transaction_id)
       );
@@ -313,7 +357,6 @@ const TransactionsPage = () => {
         currency: editFormData.currency,
       };
 
-      /* Wysyłamy PUT lub PATCH w zależności od implementacji backendu */
       await axios.put(
         `http://127.0.0.1:8000/api/transactions/${transactionToEdit.transaction_id}/`,
         updatedData,
@@ -325,7 +368,7 @@ const TransactionsPage = () => {
         }
       );
 
-      /* Po udanym update - aktualizujemy transakcję w stanie */
+      // Aktualizacja w stanie
       setTransactions((prev) =>
         prev.map((t) =>
           t.transaction_id === transactionToEdit.transaction_id
@@ -424,6 +467,8 @@ const TransactionsPage = () => {
         {/* Sekcja: Filtry */}
         <div className="filters">
           <h2>Filtry i sortowanie</h2>
+
+          {/* Szukaj po opisie */}
           <input
             type="text"
             name="searchText"
@@ -433,6 +478,8 @@ const TransactionsPage = () => {
               setFilters({ ...filters, [e.target.name]: e.target.value })
             }
           />
+
+          {/* Filtrowanie po kategorii */}
           <select
             name="categoryId"
             value={filters.categoryId}
@@ -447,6 +494,8 @@ const TransactionsPage = () => {
               </option>
             ))}
           </select>
+
+          {/* Filtrowanie po typie transakcji */}
           <select
             name="transactionType"
             value={filters.transactionType}
@@ -458,6 +507,8 @@ const TransactionsPage = () => {
             <option value="Wydatek">Wydatek</option>
             <option value="Przychód">Przychód</option>
           </select>
+
+          {/* Sortowanie */}
           <select
             name="sortKey"
             value={filters.sortKey}
@@ -471,6 +522,16 @@ const TransactionsPage = () => {
             <option value="oldest">Najstarsze transakcje</option>
             <option value="newest">Najnowsze transakcje</option>
           </select>
+
+          {/* Filtrowanie po miesiącu (YYYY-MM) - wysyłane do backendu */}
+          <input
+            type="month"
+            name="month"
+            value={filters.month}
+            onChange={(e) =>
+              setFilters({ ...filters, [e.target.name]: e.target.value })
+            }
+          />
         </div>
 
         {/* Sekcja: Lista Transakcji */}
@@ -524,6 +585,25 @@ const TransactionsPage = () => {
               )}
             </div>
           ))}
+
+          {/* PAGINACJA – proste przyciski poprzednia/następna strona */}
+          <div className="pagination">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Poprzednia
+            </button>
+            <span>
+              Strona {currentPage} z {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              Następna
+            </button>
+          </div>
         </div>
       </div>
 

@@ -186,7 +186,7 @@ const HomePage = () => {
           {/* 3. Wydatki wg kategorii (Line Chart) */}
           <div className="chart">
             <h3>Kategorie wydatków</h3>
-            <Line data={categoriesLineData} />
+            <Bar data={categoriesLineData} />
           </div>
 
           {/* 4. Przychody vs Wydatki (Bar Chart) */}

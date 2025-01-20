@@ -17,6 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 import jwt, os, json, bcrypt, logging
+import calendar
 
 logger = logging.getLogger(__name__)
 
@@ -74,71 +75,63 @@ def categories_view(request):
 @permission_classes([IsAuthenticated])
 def home_view(request):
     auth_header = request.headers.get('Authorization')
-    print("🔑 Nagłówek Authorization:", auth_header)
-
     if not auth_header:
         return Response({"error": "Brak tokena autoryzacyjnego"}, status=HTTP_403_FORBIDDEN)
 
     try:
-        # Walidacja prefiksu tokena
         prefix, token = auth_header.split(' ')
         if prefix.lower() != 'bearer':
             return Response({"error": "Nieprawidłowy prefiks tokena"}, status=HTTP_403_FORBIDDEN)
 
-        print("🔑 Token JWT:", token)
-
-        # Dekodowanie tokena
         payload = jwt.decode(token, SUPABASE_KEY, algorithms=['HS256'])
-        print("🔑 Dekodowany Payload:", payload)
-
         user_id = payload.get('user_id')
-        print("🔑 user_id z Payload:", user_id)
 
-        if not user_id or not isinstance(user_id, str):
-            print(f"❌ Błąd: user_id nie jest ciągiem znaków: {user_id}")
-            return Response({"error": "Token nie zawiera prawidłowego ID użytkownika"}, status=HTTP_403_FORBIDDEN)
+        # Pobierz transakcje użytkownika
+        transactions_response = supabase.table('Transactions').select('*').eq('transaction_owner', user_id).execute()
+        transactions = transactions_response.data
 
-        # Pobieranie użytkownika z Supabase
-        try:
-            response = supabase.table('App_Users').select('*').eq('user_id', user_id).single().execute()
-            print("🔑 Odpowiedź z Supabase:", response)
+        # Pobierz kategorie
+        categories_response = supabase.table('Categories').select('*').execute()
+        categories = {category['category_id']: category['category_name'] for category in categories_response.data}
 
-            if not response.data:
-                print("❌ Użytkownik nie znaleziony w bazie")
-                return Response({"error": "Użytkownik nie znaleziony w bazie"}, status=HTTP_403_FORBIDDEN)
+        if not transactions:
+            return Response({
+                "yearly_expenses": [0] * 12,
+                "monthly_expenses": [0] * 31,
+                "expense_categories": {},
+                "incomes_vs_expenses": {"incomes": [0] * 12, "expenses": [0] * 12}
+            }, status=HTTP_200_OK)
 
-            user = response.data
-            print(f"✅ Autoryzowany użytkownik: {user.get('username')}")
+        yearly_expenses = [0] * 12
+        monthly_expenses = [0] * 31
+        expense_categories = {}
+        incomes_vs_expenses = {"incomes": [0] * 12, "expenses": [0] * 12}
 
-        except Exception as db_error:
-            print(f"❌ Błąd podczas pobierania użytkownika z Supabase: {db_error}")
-            return Response({"error": "Błąd podczas pobierania użytkownika"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        for transaction in transactions:
+            amount = transaction['transaction_amount']
+            date = datetime.strptime(transaction['transcation_data'], "%Y-%m-%d")
+            month_index = date.month - 1
+            day_index = date.day - 1
 
-        # Placeholderowe dane dla pustej bazy danych
-        monthly_expenses = [0, 0, 0, 0, 0]
-        expense_categories = {
-            "Jedzenie": 0,
-            "Transport": 0,
-            "Zdrowie": 0,
-            "Dom": 0,
-            "Edukacja": 0
-        }
+            if transaction['transaction_type'] == 'Wydatek':
+                yearly_expenses[month_index] += amount
+                monthly_expenses[day_index] += amount
+                category_id = transaction['transaction_category_id']
+                category_name = categories.get(category_id, "Nieznana kategoria")
+                expense_categories[category_name] = expense_categories.get(category_name, 0) + amount
+                incomes_vs_expenses['expenses'][month_index] += amount
+            else:
+                incomes_vs_expenses['incomes'][month_index] += amount
 
-        # Zwrot danych podsumowania
         return Response({
+            "yearly_expenses": yearly_expenses,
             "monthly_expenses": monthly_expenses,
-            "expense_categories": expense_categories
+            "expense_categories": expense_categories,
+            "incomes_vs_expenses": incomes_vs_expenses
         }, status=HTTP_200_OK)
 
-    except jwt.ExpiredSignatureError:
-        print("❌ Token wygasł")
-        return Response({"error": "Token wygasł"}, status=HTTP_403_FORBIDDEN)
-    except jwt.InvalidTokenError:
-        print("❌ Nieprawidłowy token")
-        return Response({"error": "Nieprawidłowy token"}, status=HTTP_403_FORBIDDEN)
     except Exception as e:
-        print(f"❌ Wystąpił błąd: {e}")
-        return Response({"error": f"Błąd serwera: {e}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"error": f"Błąd serwera: {str(e)}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 @csrf_exempt
 def login_user(request):
@@ -262,46 +255,65 @@ def register_view(request):
 @permission_classes([IsAuthenticated])
 def transactions_view(request):
     """
-    Widok obsługujący listę transakcji (GET) i dodawanie nowej transakcji (POST).
-    Z założenia 'transaction_owner' to user_id z App_Users, 
-    a request.user.id powinno się z nim pokrywać (obaj to str/UUID).
+    Widok obsługujący listę transakcji (GET) z paginacją i filtrowaniem po miesiącu oraz 
+    dodawanie nowej transakcji (POST).
     """
-
     print(f"DEBUG: Wywołano transactions_view z metodą {request.method}")
     try:
-        # Pobieramy ID użytkownika z request.user.id
         user_id = str(request.user.id)
         print("DEBUG: Ustalono user_id =", user_id)
 
         if request.method == 'GET':
             print("DEBUG: Obsługa metody GET - pobieranie transakcji użytkownika.")
             try:
-                response = (
-                    supabase
-                    .from_('Transactions')
-                    .select('*')
-                    .eq('transaction_owner', user_id)
-                    .execute()
-                )
+                page = int(request.GET.get('page', 1))       # Numer strony
+                per_page = int(request.GET.get('per_page', 10))  # Ilość elementów na stronę
+                month = request.GET.get('month')            # Filtr po miesiącu (format: YYYY-MM)
+
+                # Pobranie transakcji tylko zalogowanego usera
+                query = supabase.from_('Transactions').select('*').eq('transaction_owner', user_id)
+
+                # Filtrowanie po miesiącu, np. 2023-10 => data >= 2023-10-01 i data <= 2023-10-31
+
+                if month:
+                    # Rozdzielenie roku i miesiąca z formatu YYYY-MM
+                    year, month_number = map(int, month.split('-'))
+                    
+                    # Obliczenie ostatniego dnia miesiąca
+                    _, last_day = calendar.monthrange(year, month_number)
+                    
+                    # Formatowanie dat
+                    start_date = f"{year}-{month_number:02d}-01"
+                    end_date = f"{year}-{month_number:02d}-{last_day}"
+                    
+                    # Filtrowanie zakresu dat
+                    query = query.gte('transcation_data', start_date).lte('transcation_data', end_date)              
+
+                response = query.execute()
                 print("DEBUG: Odpowiedź z supabase (GET):", response)
+
+                if not response or not hasattr(response, 'data'):
+                    print("DEBUG: Nieoczekiwana odpowiedź od serwera bazy danych (brak 'data').")
+                    return Response({'error': 'Nieoczekiwana odpowiedź od serwera bazy danych.'}, status=500)
+
+                transactions = response.data
+
+                # Prosta paginacja
+                total_transactions = len(transactions)
+                start = (page - 1) * per_page
+                end = start + per_page
+                paginated_transactions = transactions[start:end]
+
+                print("DEBUG: Zwracam listę transakcji z paginacją.")
+                return Response({
+                    'transactions': paginated_transactions,
+                    'total_pages': (total_transactions + per_page - 1) // per_page,
+                    'current_page': page,
+                }, status=HTTP_200_OK)
+
             except Exception as e:
                 print("DEBUG: Błąd podczas pobierania transakcji:", e)
                 return Response({'error': f'Błąd serwera: {str(e)}'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
-
-            # Weryfikacja, czy w ogóle dostaliśmy poprawny obiekt z polami
-            if not response or not hasattr(response, 'data'):
-                print("DEBUG: Nieoczekiwana odpowiedź od serwera bazy danych (brak 'data').")
-                return Response({'error': 'Nieoczekiwana odpowiedź od serwera bazy danych.'}, status=500)
-
-            transactions = response.data
-            print("DEBUG: transakcje pobrane z bazy:", transactions)
-
-            if not transactions:
-                print("DEBUG: Brak transakcji dla danego użytkownika.")
-                return Response({'transactions': [], 'message': 'Brak transakcji.'}, status=HTTP_200_OK)
-
-            print("DEBUG: Zwracam listę transakcji.")
-            return Response({'transactions': transactions}, status=HTTP_200_OK)
 
         elif request.method == 'POST':
             print("DEBUG: Obsługa metody POST - dodawanie nowej transakcji.")
@@ -321,28 +333,17 @@ def transactions_view(request):
                 }
                 print("DEBUG: Zbudowany obiekt new_transaction:", new_transaction)
 
-                # Wstawiamy transakcję
-                try:
-                    insert_resp = (
-                        supabase
-                        .from_('Transactions')
-                        .insert(new_transaction)
-                        .execute()
-                    )
-                    print("DEBUG: Odpowiedź z supabase (POST):", insert_resp)
-                except Exception as insert_err:
-                    print("DEBUG: Błąd podczas wstawiania transakcji:", insert_err)
-                    return Response({'error': str(insert_err)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+                insert_resp = supabase.from_('Transactions').insert(new_transaction).execute()
+                print("DEBUG: Odpowiedź z supabase (POST):", insert_resp)
 
-                # Zwracamy to, co chcesz - np. stały 'transaction_id': 123
                 print("DEBUG: Nowa transakcja została pomyślnie dodana.")
+                # Zwracamy np. w polu 'transaction_id' jakiś ID, tu na sztywno 123 jako przykład
                 return Response({'transaction': new_transaction, 'transaction_id': 123}, status=HTTP_201_CREATED)
 
             except Exception as e:
                 print("DEBUG: Błąd przy odczytywaniu/parsowaniu danych POST:", e)
                 return Response({'error': str(e)}, status=500)
 
-        # Dla innych metod zwracamy 405 (Method Not Allowed)
         print(f"DEBUG: Metoda {request.method} nieobsługiwana.")
         return Response({"error": "Method Not Allowed"}, status=405)
 
@@ -468,3 +469,55 @@ def transaction_detail_view(request, transaction_id):
     except Exception as e:
         print("Błąd ogólny:", e)
         return Response({"error": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def user_profile_view(request):
+    try:
+        # Pobierz ID użytkownika z tokena
+        user_id = request.user.id
+
+        # Pobranie danych użytkownika z Supabase
+        if request.method == 'GET':
+            user_response = supabase.table('App_Users').select('*').eq('user_id', user_id).single().execute()
+            user_data = user_response.data
+
+            if not user_data:
+                return Response({"error": "Nie znaleziono użytkownika w bazie danych."}, status=404)
+
+            return Response({
+                "user_id": user_data['user_id'],
+                "username": user_data['username'],
+                "user_email": user_data['user_email'],
+                "first_name": user_data.get('first_name', ''),
+                "last_name": user_data.get('last_name', ''),
+                "created_at": user_data.get('created_at', ''),
+                "last_login": user_data.get('last_login', ''),
+                "is_active": user_data.get('is_active', False),
+                "langauge": user_data.get('langauge', ''),
+                "currency": user_data.get('currency', ''),
+            }, status=200)
+
+        # Aktualizacja danych użytkownika
+        if request.method == 'PUT':
+            data = request.data
+            updated_fields = {
+                "user_name": data.get('user_name'),
+                "first_name": data.get('first_name'),
+                "last_name": data.get('last_name'),
+                "user_email": data.get('user_email'),
+            }
+
+            # Filtruj pola, które są faktycznie przekazane
+            updated_fields = {k: v for k, v in updated_fields.items() if v is not None}
+
+            # Aktualizacja w Supabase
+            update_response = supabase.table('App_Users').update(updated_fields).eq('user_id', user_id).execute()
+
+            if update_response.status_code >= 400:
+                return Response({"error": "Nie udało się zaktualizować danych."}, status=500)
+
+            return Response({"message": "Dane użytkownika zostały zaktualizowane."}, status=200)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
