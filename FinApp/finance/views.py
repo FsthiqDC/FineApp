@@ -12,11 +12,11 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN, HTTP_500_INTERNAL_SERVER_ERROR,  HTTP_404_NOT_FOUND, HTTP_201_CREATED
+from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN, HTTP_500_INTERNAL_SERVER_ERROR,  HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
-import jwt, os, json, bcrypt, logging, re, calendar
+import jwt, os, json, bcrypt, logging, re, calendar, uuid
 from datetime import datetime
 from isoweek import Week
 
@@ -609,3 +609,175 @@ def user_profile_view(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+    
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def savings_goals_list_view(request):
+    """
+    Widok obsługujący listę celów oszczędnościowych (GET) i tworzenie nowego celu (POST).
+    Tabela w Supabase: 'SavingsGoals'.
+    Pola kluczowe (wg Twojej struktury):
+      - savingsgoals_id (uuid)
+      - savingsgoals_owner_id (uuid)
+      - savingsgoals_name (text)
+      - savingsgoals_target_amount (float8)
+      - savingsgoals_amount (float8) – domyślnie 0
+      - savingsgoals_status (text) – np. 'Aktywny'
+      - savingsgoals_currency (text)
+    """
+
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return Response({"error": "Brak tokena autoryzacyjnego"}, status=HTTP_403_FORBIDDEN)
+
+    try:
+        prefix, token = auth_header.split(' ')
+        if prefix.lower() != 'bearer':
+            return Response({"error": "Nieprawidłowy prefiks tokena"}, status=HTTP_403_FORBIDDEN)
+
+        payload = jwt.decode(token, SUPABASE_KEY, algorithms=['HS256'])
+        user_id = payload.get('user_id')
+    except Exception as e:
+        return Response({"error": f"Błąd autoryzacji: {str(e)}"}, status=HTTP_403_FORBIDDEN)
+
+    # GET – pobranie listy celów
+    if request.method == 'GET':
+        try:
+            goals_response = supabase.table('SavingsGoals').select('*').eq('savingsgoals_owner_id', user_id).execute()
+            if not goals_response or not hasattr(goals_response, 'data'):
+                return Response({"goals": []}, status=HTTP_200_OK)
+
+            goals_data = goals_response.data or []
+            return Response({"goals": goals_data}, status=HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": f"Błąd podczas pobierania celów: {str(e)}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # POST – tworzenie nowego celu
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body)
+            print("DEBUG: Otrzymane od frontendu:", body)
+
+            new_goal = {
+                "savingsgoals_owner_id": user_id,
+                "savingsgoals_name": body.get('savingsgoals_name'),
+                "savingsgoals_target_amount": float(body.get('savingsgoals_target_amount', 0.0)),
+                "savingsgoals_amount": 0.0,
+                "savingsgoals_status": "Aktywny",
+                "savingsgoals_currency": body.get('savingsgoals_currency', 'PLN'),
+            }
+            print("DEBUG: Tworzony obiekt new_goal:", new_goal)
+
+            insert_resp = supabase.table('SavingsGoals').insert(new_goal).execute()
+            print("DEBUG: insert_resp =", insert_resp)
+
+            # Sprawdź, czy insert_resp i insert_resp.data są poprawne
+            if not insert_resp or not hasattr(insert_resp, 'data'):
+                return Response({"error": "Nieoczekiwana odpowiedź od Supabase."}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+            if not insert_resp.data:
+                return Response({"error": "Błąd podczas wstawiania rekordu."}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+            # Jeżeli insert się powiódł, insert_resp.data zawiera wstawione rekordy
+            return Response({"message": "Cel został pomyślnie dodany."}, status=HTTP_201_CREATED)
+
+        except Exception as e:
+            print("DEBUG: Wyjątek przy tworzeniu celu:", str(e))
+            return Response({"error": f"Błąd podczas tworzenia celu: {str(e)}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+@api_view(['GET', 'PATCH', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def savings_goals_detail_view(request, goal_id):
+    """
+    Widok obsługujący GET, PATCH, DELETE dla tabeli 'SavingsGoals'.
+    Zakładamy strukturę w Supabase:
+      - SavingsGoals_id (uuid)        [klucz główny]
+      - savingsgoals_owner_id (uuid)  [właściciel]
+      - savingsgoals_name (text)
+      - savingsgoals_target_amount (float8)
+      - savingsgoals_amount (float8)  [aktualny stan]
+      - savingsgoals_status (text)    [np. "Aktywny" / "Ukończony"]
+      - savingsgoals_currency (text)
+    
+    Wersja 'wariant A' - minimalna obsługa błędów:
+     - Nie sprawdzamy response.status_code / error w obiekcie Supabase
+     - Zakładamy że brak wyjątku => operacja się udała
+     - Gdy supabase (lub cokolwiek) rzuci Exception => 500
+    """
+
+    # -------------------- AUTORYZACJA + SPRAWDZENIE CELU --------------------
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return Response({"error": "Brak tokena autoryzacyjnego"}, status=HTTP_403_FORBIDDEN)
+
+        prefix, token = auth_header.split(' ')
+        if prefix.lower() != 'bearer':
+            return Response({"error": "Nieprawidłowy prefiks tokena"}, status=HTTP_403_FORBIDDEN)
+
+        payload = jwt.decode(token, SUPABASE_KEY, algorithms=['HS256'])
+        user_id = payload.get('user_id')
+
+        # Sprawdzenie czy istnieje taki rekord i czy należy do usera
+        goal_resp = supabase.table('SavingsGoals').select('*').eq('SavingsGoals_id', goal_id).single().execute()
+        if not goal_resp.data:
+            return Response({"error": "Cel nie istnieje."}, status=HTTP_404_NOT_FOUND)
+
+        goal_data = goal_resp.data
+        if goal_data['savingsgoals_owner_id'] != user_id:
+            return Response({"error": "Brak dostępu do tego celu."}, status=HTTP_403_FORBIDDEN)
+
+    except Exception as e:
+        return Response({"error": f"Błąd autoryzacji lub pobierania celu: {str(e)}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # -------------------- OBSŁUGA METOD --------------------
+    if request.method == 'GET':
+        # Zwracamy dane celu
+        return Response({"goal": goal_data}, status=HTTP_200_OK)
+
+    if request.method == 'PATCH':
+        try:
+            body = json.loads(request.body)
+            update_fields = {}
+
+            # Pola do zaktualizowania:
+            if 'savingsgoals_name' in body:
+                update_fields['savingsgoals_name'] = body['savingsgoals_name']
+            if 'savingsgoals_target_amount' in body:
+                update_fields['savingsgoals_target_amount'] = float(body['savingsgoals_target_amount'])
+            if 'savingsgoals_amount' in body:
+                update_fields['savingsgoals_amount'] = float(body['savingsgoals_amount'])
+            if 'savingsgoals_status' in body:
+                update_fields['savingsgoals_status'] = body['savingsgoals_status']
+            if 'savingsgoals_currency' in body:
+                update_fields['savingsgoals_currency'] = body['savingsgoals_currency']
+
+            if not update_fields:
+                return Response({"error": "Brak pól do aktualizacji."}, status=HTTP_400_BAD_REQUEST)
+
+            # Wywołanie Supabase - brak sprawdzania result.status_code / error
+            supabase.table('SavingsGoals').update(update_fields).eq('SavingsGoals_id', goal_id).execute()
+
+            # Jeśli brak Exception => sukces
+            return Response({"message": "Cel zaktualizowany pomyślnie."}, status=HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": f"Błąd aktualizacji: {str(e)}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+    if request.method == 'DELETE':
+        try:
+            supabase.table('SavingsGoals').delete().eq('SavingsGoals_id', goal_id).execute()
+            # Jeśli brak Exception => sukces
+            return Response({"message": "Cel usunięty pomyślnie."}, status=HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": f"Błąd usuwania: {str(e)}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Jeśli nieobsługiwana metoda
+    return Response({"error": "Method not allowed"}, status=405)
+
+
+

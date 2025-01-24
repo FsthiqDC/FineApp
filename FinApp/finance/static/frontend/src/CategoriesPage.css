@@ -7,14 +7,7 @@
   text-align: center;
 }
 
-/* Nagłówek strony */
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333; /* Czarny tekst */
-  font-size: 2.2em;
-  font-weight: bold;
-}
+
 
 /* Wiadomości błędów */
 .error-message {
@@ -26,29 +19,33 @@ h2 {
 /* Lista kategorii */
 .categories-list {
   list-style: none;
-  padding: 30px;
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* Maksymalnie 3 kolumny */
   gap: 20px;
   justify-content: center; /* Centrowanie siatki */
   align-items: start;
+  margin-right: 20px;
+}
+
+ul {
+  padding: 0px;
+  margin: 20px
 }
 
 /* Pojedyncza kategoria */
 .category-item {
   background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   text-align: left; /* Tekst wyrównany do lewej */
   min-height: 250px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  margin: 10px auto;
   overflow: hidden;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .category-item:hover {

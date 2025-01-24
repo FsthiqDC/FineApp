@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import login_view, register_view, csrf_view, home_view, get_user, login_user, categories_view, transactions_view, transaction_detail_view, user_profile_view
+from .views import login_view, register_view, csrf_view, home_view, get_user, login_user, categories_view, transactions_view, transaction_detail_view, user_profile_view, savings_goals_list_view, savings_goals_detail_view
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
@@ -13,5 +13,9 @@ urlpatterns = [
     path('api/categories/', categories_view, name='categories_view'),
     path('api/transactions/', transactions_view, name='transactions'),
     path('api/transactions/<str:transaction_id>/', transaction_detail_view, name='transaction_detail'),
-    path('api/user-profile/', user_profile_view, name='user_profile')
+    path('api/user-profile/', user_profile_view, name='user_profile'),
+    # Lista i tworzenie
+    path('api/savings-goals/', savings_goals_list_view, name='savings_goals_list'),
+    # Szczegół, np. PATCH/DELETE
+    path('api/savings-goals/<uuid:goal_id>/', savings_goals_detail_view, name='savings_goals_detail'),
 ]

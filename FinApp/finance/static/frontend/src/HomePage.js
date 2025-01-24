@@ -303,7 +303,6 @@ const HomePage = () => {
       <Navbar />
       <div className="content">
         {/* Wyśrodkowany tytuł */}
-        <h2 style={{ textAlign: 'center' }}>📊 Podsumowanie</h2>
         {error && <p className="error-message">{error}</p>}
 
         <div className="charts-container">

@@ -8,6 +8,7 @@ import SettingsPage from './SettingsPage';
 import TransactionsPage from './TransactionsPage'; // ✅ Import TransactionsPage
 import ProtectedRoute from './ProtectedRoute';
 import CookiesBanner from './components/Cookies';
+import TargetsPage from './TargetsPage';
 
 function App() {
   return (
@@ -40,6 +41,14 @@ function App() {
           element={
             <ProtectedRoute>
               <TransactionsPage />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path="/targets"
+          element={
+            <ProtectedRoute>
+              <TargetsPage />
             </ProtectedRoute>
           }
         />
