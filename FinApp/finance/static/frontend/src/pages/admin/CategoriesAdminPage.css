@@ -1,0 +1,446 @@
+/* 
+====================================================================
+ Bazowe tło i font – taki sam reset, jak w UsersAdminPage.css
+====================================================================
+*/
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #f5f7fa;
+  font-family: 'Arial', sans-serif;
+}
+
+/*
+====================================================================
+ Główny kontener -> .admin-categories-container
+====================================================================
+*/
+.admin-categories-container {
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background-color: #f5f7fa;
+  display: flex; /* kolumna */
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+/*
+====================================================================
+ Sekcja zawartości: 3 kolumny -> .admin-categories-content
+====================================================================
+*/
+.admin-categories-content {
+  color: #333;
+  display: flex;
+  gap: 20px;
+  flex-wrap: nowrap;
+  margin: 20px;
+  box-sizing: border-box;
+}
+
+/*
+====================================================================
+ LEWA KOLUMNA – FORMULARZ (1/5)
+ -> .admin-category-form
+====================================================================
+*/
+.admin-category-form {
+  flex: 1;
+  max-width: 20%;  /* 1/5 */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.admin-category-form h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+/* Pola formularza */
+.admin-category-form input,
+.admin-category-form select,
+.admin-category-form textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  box-sizing: border-box;
+}
+
+/* Przycisk dodania nowej kategorii */
+.admin-add-category-button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #007bff;
+  border: 1px solid #0056b3;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+}
+.admin-add-category-button:hover {
+  background-color: #0056b3;
+}
+
+/*
+====================================================================
+ ŚRODKOWA KOLUMNA – FILTRY (1/5)
+ -> .admin-categories-filters
+====================================================================
+*/
+.admin-categories-filters {
+  flex: 1;
+  max-width: 20%;  /* 1/5 */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.admin-categories-filters h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.admin-categories-filters input,
+.admin-categories-filters select {
+  display: block;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+/*
+====================================================================
+ PRAWA KOLUMNA – LISTA (3/5)
+ -> .admin-categories-list
+====================================================================
+*/
+.admin-categories-list {
+  flex: 3;
+  max-width: 60%;  /* 3/5 */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.admin-categories-list h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+/*
+====================================================================
+ POJEDYNCZY KAFELEK KATEGORII -> .admin-category-item
+====================================================================
+*/
+.admin-category-item {
+  width: 100%;
+  padding: 15px;
+  background-color: #fff;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* 
+   Górna linia: nazwa, ewentualnie opis -> .admin-category-main-info
+*/
+.admin-category-main-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.admin-category-title {
+  font-weight: bold;
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.admin-category-description-inline {
+  color: #555;
+  font-size: 14px;
+}
+
+/*
+====================================================================
+ Sekcja akcji -> .admin-category-actions
+====================================================================
+*/
+.admin-category-actions {
+  width: 100%;
+  display: inline-flex;
+  gap: 20px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.admin-category-actions img {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.admin-category-actions img:hover {
+  transform: scale(1.2);
+}
+
+/*
+====================================================================
+ Rozwijane szczegóły -> .admin-category-details
+====================================================================
+*/
+.admin-category-details {
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #fff;
+  line-height: 1.6;
+
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.admin-category-details.expanded {
+  max-height: 300px; /* lub większa wartość */
+}
+
+/*
+====================================================================
+ PAGINACJA -> .pagination
+====================================================================
+*/
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+}
+.pagination button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #007bff;
+  border: 1px solid #0056b3;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.pagination button:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+.pagination button:disabled {
+  background-color: #e9ecef;
+  border-color: #ccc;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+/*
+====================================================================
+ MODAL -> .modal, .modal-content
+====================================================================
+*/
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: #fff;
+  width: 400px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+  text-align: center;
+}
+.modal-content form {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.modal-content form label {
+  font-weight: bold;
+  font-size: 14px;
+}
+.modal-content form input,
+.modal-content form select,
+.modal-content form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+/*
+====================================================================
+ Przyciski w modalu -> .cancel-button, .save-button, .delete-button
+====================================================================
+*/
+.cancel-button {
+  background-color: #6c757d;
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.cancel-button:hover {
+  background-color: #5a6268;
+}
+.save-button {
+  background-color: #28a745;
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.save-button:hover {
+  background-color: #218838;
+}
+.delete-button {
+  background-color: rgb(224, 35, 35);
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.delete-button:hover {
+  background-color: rgb(179, 45, 45);
+}
+
+/* ewentualny scrollbar */
+.admin-categories-list::-webkit-scrollbar {
+  width: 8px;
+}
+.admin-categories-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+/*
+====================================================================
+ RWD (media queries)
+====================================================================
+*/
+@media (max-width: 992px) {
+  .admin-categories-content {
+    flex-wrap: wrap;
+  }
+  .admin-category-form,
+  .admin-categories-filters,
+  .admin-categories-list {
+    max-width: 100%;
+    flex: 1 1 100%;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-categories-content {
+    margin: 10px;
+    flex-direction: column;
+  }
+  .admin-category-form,
+  .admin-categories-filters,
+  .admin-categories-list {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .admin-category-main-info {
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  .admin-category-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: right;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-category-form h2,
+  .admin-categories-filters h2,
+  .admin-categories-list h2 {
+    font-size: 1.3em;
+  }
+  .admin-categories-content {
+    margin: 5px;
+  }
+  .admin-category-item {
+    padding: 10px;
+  }
+  .admin-category-actions img {
+    width: 20px;
+    height: 20px;
+  }
+  .admin-category-title {
+    font-size: 14px;
+  }
+}

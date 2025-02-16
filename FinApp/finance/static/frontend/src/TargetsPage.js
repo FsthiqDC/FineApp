@@ -47,7 +47,7 @@ const TargetsPage = () => {
 
   // Paginacja
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(3);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
 
   // Suwaki – wartości lokalne w trakcie przesuwania (bez części dziesiętnych)
   const [sliderValues, setSliderValues] = useState({});
@@ -411,8 +411,6 @@ const TargetsPage = () => {
             value={searchName}
             onChange={(e) => setSearchName(e.target.value)}
           />
-
-          <label>Ukończenie (%)</label>
           <div className="completion-range">
             <input
               type="number"
@@ -423,7 +421,7 @@ const TargetsPage = () => {
                 setCompletionRange([Number(e.target.value), completionRange[1]])
               }
             />
-            <span>-</span>
+            <span></span>
             <input
               type="number"
               min="0"
@@ -435,7 +433,6 @@ const TargetsPage = () => {
             />
           </div>
 
-          <label>Sortowanie wg wypełnienia</label>
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
@@ -443,13 +440,11 @@ const TargetsPage = () => {
             <option value="desc">Od największego do najmniejszego</option>
             <option value="asc">Od najmniejszego do największego</option>
           </select>
-
-          <label>Wyświetl na stronie</label>
           <select
             value={itemsPerPage}
             onChange={(e) => setItemsPerPage(Number(e.target.value))}
           >
-            <option value={3}>3</option>
+            <option value={4}>Ilość celów na strone (4)</option>
             <option value={5}>5</option>
             <option value={10}>10</option>
           </select>
@@ -457,8 +452,7 @@ const TargetsPage = () => {
 
         {/* PRAWA KOLUMNA - Lista celów */}
         <div className="goals-list">
-          <h2>Lista celów</h2>
-          {error && <div className="error-message">{error}</div>}
+          <h2>Twoje cele</h2>
           {successMessage && <div className="success-message">{successMessage}</div>}
 
           {/* Zakładki: "Aktywne" / "Ukończone" */}
@@ -574,12 +568,14 @@ const TargetsPage = () => {
                     <img
                       src="edit-pen-icon.png"
                       alt="Edytuj"
+                      title='Edytuj'
                       onClick={() => handleEditClick(goal)}
                       className="action-icon"
                     />
                     <img
                       src="recycle-bin-line-icon.png"
                       alt="Usuń"
+                      title='Usuń'
                       onClick={() => openDeleteModal(goal)}
                       className="action-icon"
                     />
@@ -615,8 +611,8 @@ const TargetsPage = () => {
           <div className="modal-content">
             <h2>Czy na pewno chcesz usunąć ten cel?</h2>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-              <button onClick={closeDeleteModal}>Anuluj</button>
-              <button onClick={confirmDelete}>Usuń</button>
+              <button class="cancel-button" onClick={closeDeleteModal}>Anuluj</button>
+              <button class="delete-button" onClick={confirmDelete}>Usuń</button>
             </div>
           </div>
         </div>

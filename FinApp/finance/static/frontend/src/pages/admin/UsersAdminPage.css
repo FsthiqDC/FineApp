@@ -1,0 +1,431 @@
+/* ZACHOWUJE TEN SAM RESET / BAZOWE TŁO, CO W TransactionsPage.css */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #f5f7fa; /* Tło takie samo */
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* GŁÓWNY KONTENER (odpowiednik .transactions-container) */
+  .users-container {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    background-color: #f5f7fa;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+  }
+  
+  /* KONTENT: tak samo jak .transactions-content */
+  .users-content {
+    color: #333;
+    display: flex;
+    gap: 20px;
+    flex-wrap: nowrap;
+    margin: 20px;
+    box-sizing: border-box;
+  }
+  
+  /* LEWA KOLUMNA - FORMULARZ (odpowiednik .transaction-form) */
+  .user-form {
+    flex: 1;
+    max-width: 20%;          /* 1/5 szerokości */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .user-form h2 {
+    margin-top: 0px;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    color: #333;
+    text-align: center;
+  }
+  
+  /* Pola formularza (odpowiednik input w transaction-form) */
+  .user-form input,
+  .user-form select,
+  .user-form textarea {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    box-sizing: border-box;
+  }
+  
+  /* Checkbox w formularzu */
+  .active-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  /* Przycisk dodawania użytkownika (odpowiednik .add-transaction-button) */
+  .add-user-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border: 1px solid #0056b3;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .add-user-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* ŚRODKOWA KOLUMNA - FILTRY (odpowiednik .filters) */
+  .users-filters {
+    flex: 1;
+    max-width: 20%;          /* 1/5 szerokości */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .users-filters h2 {
+    margin-top: 0px;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    color: #333;
+    text-align: center;
+  }
+  
+  /* Filtry - input/select (odpowiednik .filters input, .filters select) */
+  .users-filters input,
+  .users-filters select {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+  }
+  
+  /* PRAWA KOLUMNA - LISTA (odpowiednik .transactions-list) */
+  .users-list {
+    flex: 3;
+    max-width: 60%;          /* 3/5 szerokości */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .users-list h2 {
+    margin-top: 0px;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    text-align: center;
+  }
+  
+  /* POJEDYNCZY "KAFELEK" UŻYTKOWNIKA (odpowiednik .transaction-item) */
+  .user-item {
+    width: 100%;
+    padding: 15px;
+    background-color: #fff;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Info o użytkowniku w wierszu (odpowiednik .transaction-left / .transaction-summary) */
+  .user-main-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .user-username {
+    font-weight: bold;
+    margin-right: 8px;
+  }
+  .user-email {
+    color: #555;
+  }
+  
+  /* Status (aktywny/zablokowany) */
+  .active-status {
+    font-weight: bold;
+    color: #28a745;
+  }
+  .blocked-status {
+    font-weight: bold;
+    color: #dc3545;
+  }
+  
+  /* AKCJE (odpowiednik .transaction-actions) */
+  .user-actions {
+    width: 100%;
+    display: inline-flex;
+    gap: 20px;
+    justify-content: right;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  /* Ikony akcji (edytuj, usuń, oko, zablokuj) */
+  .user-actions img {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  .user-actions img:hover {
+    transform: scale(1.2);
+  }
+  
+  /* ROZWIJANE SZCZEGÓŁY (odpowiednik .transaction-details) */
+  .user-details {
+    margin-top: 10px;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    font-size: 14px;
+    background-color: #fff;
+    line-height: 1.6;
+  
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .user-details.expanded {
+    max-height: 300px; /* lub duża wartość */
+  }
+  
+  /* PRZYCISKI / SELECT / INPUT (ogólne) */
+  button,
+  select,
+  input {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    box-sizing: border-box;
+  }
+  
+  /* PAGINACJA (odpowiednik .pagination) */
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center; /* Wyśrodkowanie */
+  }
+  
+  .pagination button {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #007bff;
+    border: 1px solid #0056b3;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .pagination button:hover {
+    background-color: #0056b3;
+    color: #fff;
+  }
+  .pagination button:disabled {
+    background-color: #e9ecef;
+    border-color: #ccc;
+    color: #6c757d;
+    cursor: not-allowed;
+  }
+  
+  /* MODAL (odpowiednik .modal w transactions) */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background: #fff;
+    width: 400px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  
+  .modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    text-align: center;
+  }
+  
+  .modal-content form {
+    display: inline-block;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .modal-content form label {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .modal-content form input,
+  .modal-content form select,
+  .modal-content form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+  }
+  
+  /* Przyciski w modalu (cancel, save, delete) */
+  .modal-content button.save-button {
+    background-color: #28a745;
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .modal-content button.save-button:hover {
+    background-color: #218838;
+  }
+  
+  .modal-content button.cancel-button {
+    background-color: #6c757d;
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .modal-content button.cancel-button:hover {
+    background-color: #5a6268;
+  }
+  
+  .modal-content button.delete-button {
+    background-color: rgb(224, 35, 35);
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .modal-content button.delete-button:hover {
+    background-color: rgb(179, 45, 45);
+  }
+  
+  /* SCROLLBARY, JEŚLI CHCESZ TAK JAK W transactions-list */
+  .users-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .users-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+  }
+  
+  /* RWD (media queries) – tak samo jak TransactionsPage.css */
+  @media (max-width: 992px) {
+    .users-content {
+      flex-wrap: wrap;
+    }
+    .user-form,
+    .users-filters,
+    .users-list {
+      max-width: 100%;
+      flex: 1 1 100%;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .users-content {
+      margin: 10px;
+      flex-direction: column;
+    }
+  
+    .user-form,
+    .users-filters,
+    .users-list {
+      width: 100%;
+      max-width: 100%;
+      margin-bottom: 20px;
+    }
+  
+    .user-main-info {
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+    }
+  
+    .user-actions {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: right;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .user-form h2,
+    .users-filters h2,
+    .users-list h2 {
+      font-size: 1.3em;
+    }
+  
+    .users-content {
+      margin: 5px;
+    }
+  
+    .user-item {
+      padding: 10px;
+    }
+  
+    .user-actions img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  

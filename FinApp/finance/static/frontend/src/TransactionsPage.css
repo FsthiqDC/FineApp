@@ -33,7 +33,7 @@ html, body {
 .transactions-list {
   color: #333;
   border-radius: 8px;
-  background-color: f5f7fa;
+  background-color: #f5f7fa;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -42,7 +42,6 @@ html, body {
 .transaction-form {
   flex: 1;
   max-width: 20%;
-  background-color: white;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -140,7 +139,7 @@ html, body {
   box-sizing: border-box;
   background-color: #fff;
   border: 1px solid #ddd;
-  border-radius: 10px;
+  border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -298,20 +297,52 @@ button:hover {
   width: 100%;
 }
 
-.modal-content button {
+.modal-content button.save-button {
   align-self: flex-end;
   margin: 5px 5px 0 5px;
-  padding: 10px;
+  padding: 8px 16px;
   font-size: 14px;
-  background-color: #007bff;
+  background-color: #28a745; /* Zielony kolor */
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
-.modal-content button:hover {
-  background-color: #0056b3;
+.modal-content button.cancel-button {
+  align-self: flex-end;
+  margin: 5px 5px 0 5px;
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #6c757d; /* Szary kolor */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-content button.cancel-button:hover {
+  background-color: #5a6268;
+}
+
+.modal-content button.save-button:hover {
+  background-color: #218838;
+}
+
+.modal-content button.delete-button {
+  align-self: flex-end;
+  margin: 5px 5px 0 5px;
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: rgb(224, 35, 35); /* Szary kolor */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-content button.delete-button:hover {
+  background-color: rgb(179, 45, 45);
 }
 
 /* PAGINACJA */
@@ -331,7 +362,7 @@ button:hover {
 }
 
 .pagination button {
-  padding: 10px 15px;
+  padding: 8px 16px;
   font-size: 14px;
   background-color: #007bff; /* Główny kolor przycisku */
   border: 1px solid #0056b3; /* Obramowanie */
@@ -382,13 +413,20 @@ button:hover {
     margin-bottom: 20px;
   }
 
-  .transaction-left,
-  .transaction-actions {
+  .transaction-left{
     width: 100%;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: space-between;
+  }
+
+  .transaction-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: right;
   }
 }
 

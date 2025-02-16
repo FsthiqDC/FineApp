@@ -16,7 +16,9 @@ import './HomePage.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend);
 
-/* Funkcje pomocnicze do uzyskania domyślnego roku/miesiąca */
+/* ====================== Funkcje pomocnicze ====================== */
+
+// 1. Rok i miesiąc
 const getCurrentYear = () => new Date().getFullYear();
 const getCurrentMonth = () => {
   const now = new Date();
@@ -25,189 +27,190 @@ const getCurrentMonth = () => {
   return `${year}-${month}`; // np. "2025-01"
 };
 
+// 2. Tydzień ISO. Zwraca np. "2025-W03"
+function getCurrentWeekISO() {
+  const now = new Date();
+  // Kopia daty, by nie modyfikować oryginalnej
+  const date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  
+  // Rachunek: Dzień tygodnia wg ISO: Pon=1..Niedz=7. W JS: Niedz=0..Sob=6
+  const dayNum = date.getUTCDay() || 7; 
+  // Jeżeli to niedziela => dayNum=7, jeżeli pon =>1, itp.
+
+  // Ustawić datę na czwartek w tym samym tygodniu – ISO definicja
+  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+
+  // Odczyt roku z czwartku (ISOweek)
+  const year = date.getUTCFullYear();
+
+  // Numer tygodnia
+  const startOfYear = new Date(Date.UTC(year, 0, 1));
+  const diff = (date.getTime() - startOfYear.getTime()) / 86400000;
+  // n = liczba dni od 1 stycznia do czwartku
+  const weekNum = Math.ceil((diff + 1) / 7);
+
+  // Format "YYYY-WNN" => np. 2025-W03
+  const weekStr = String(weekNum).padStart(2, '0');
+  return `${year}-W${weekStr}`;
+}
+
+/* ====================== Komponent główny ====================== */
+
 const HomePage = () => {
-  /* ================== Stany danych do wykresów ================== */
-  const [yearlyExpenses, setYearlyExpenses] = useState([]);        // Wydatki roczne
-  const [monthlyExpenses, setMonthlyExpenses] = useState([]);      // Wydatki w danym miesiącu
-  const [expenseCategories, setExpenseCategories] = useState({});   // Wydatki w kategoriach
+  // ================== STANY DANYCH DO WYKRESÓW ==================
+  const [yearlyExpenses, setYearlyExpenses] = useState([]);
+  const [monthlyExpenses, setMonthlyExpenses] = useState([]);
+  const [expenseCategories, setExpenseCategories] = useState({});
   const [incomesVsExpenses, setIncomesVsExpenses] = useState({ incomes: [], expenses: [] });
 
-  /* Dwa nowe wykresy */
-  const [weeklyAverages, setWeeklyAverages] = useState([]);         // Średnie wydatki w tygodniu
-  const [sumVsCount, setSumVsCount] = useState({ sum: 0, count: 0 }); // Suma wydatków vs ilość transakcji
+  // Średnie wydatki tygodniowe
+  const [weeklyAverages, setWeeklyAverages] = useState([]);
+  // Cele zrealizowane vs trwające
+  const [goalsStatus, setGoalsStatus] = useState({ completed: 0, active: 0 });
 
-  /* ================== Stany filtrów ================== */
-  // 1. Wydatki roczne: wybór roku
+  // ================== STANY FILTRÓW ==================
+  // 1. Wydatki roczne
   const [yearForYearly, setYearForYearly] = useState(getCurrentYear());
-  const [showYearlyFilters, setShowYearlyFilters] = useState(false); // Ukrywanie filtra
+  const [showYearlyFilters, setShowYearlyFilters] = useState(false);
 
-  // 2. Wydatki w danym miesiącu: wybór miesiąca (YYYY-MM)
+  // 2. Wydatki w miesiącu
   const [monthForMonthly, setMonthForMonthly] = useState(getCurrentMonth());
-  const [showMonthlyFilters, setShowMonthlyFilters] = useState(false); // Ukrywanie filtra
+  const [showMonthlyFilters, setShowMonthlyFilters] = useState(false);
 
-  // 3. Kategorie: wybór tylko roku
+  // 3. Kategorie
   const [yearForCategories, setYearForCategories] = useState(getCurrentYear());
-  const [showCategoriesFilters, setShowCategoriesFilters] = useState(false); // Ukrywanie filtra
+  const [showCategoriesFilters, setShowCategoriesFilters] = useState(false);
 
-  // 4. Przychody vs Wydatki: wybór roku
+  // 4. Incomes vs Expenses
   const [yearForIncomesVsExpenses, setYearForIncomesVsExpenses] = useState(getCurrentYear());
   const [showIncomesVsExpensesFilters, setShowIncomesVsExpensesFilters] = useState(false);
 
-  /* Dwa nowe wykresy – stany filtrów (jeśli będą potrzebne) */
-  const [yearForWeekly, setYearForWeekly] = useState(getCurrentYear());
+  // 5. Średnie wydatki tygodniowe => DOMYŚLNIE aktualny tydzień
+  const [weekForWeekly, setWeekForWeekly] = useState(getCurrentWeekISO());
   const [showWeeklyFilters, setShowWeeklyFilters] = useState(false);
 
-  const [yearForSumVsCount, setYearForSumVsCount] = useState(getCurrentYear());
-  const [showSumVsCountFilters, setShowSumVsCountFilters] = useState(false);
+  // 6. Cele zrealizowane vs trwające (dawne sumVsCount)
+  const [yearForGoalsStatus, setYearForGoalsStatus] = useState(getCurrentYear());
+  const [showGoalsStatusFilters, setShowGoalsStatusFilters] = useState(false);
 
-  /* Komunikaty błędów */
+  // Komunikat błędu
   const [error, setError] = useState('');
 
-  /* ================== Funkcje pobierające dane ================== */
+  /* ================== FUNKCJE POBIERAJĄCE ================== */
   // 1. Wydatki roczne
   const fetchYearlyExpenses = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token) {
-        setError('❌ Brak tokena autoryzacyjnego. Zaloguj się ponownie.');
-        window.location.href = '/login';
-        return;
-      }
       const params = { year: yearForYearly };
-      const response = await axios.get('http://127.0.0.1:8000/api/home/', {
+      const resp = await axios.get('http://127.0.0.1:8000/api/home/', {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
-      setYearlyExpenses(response.data.yearly_expenses || []);
-    } catch (err) {
-      setError('❌ Nie udało się pobrać danych rocznych.');
+      setYearlyExpenses(resp.data.yearly_expenses || []);
+    } catch {
+      setError('Nie udało się pobrać danych rocznych');
     }
   };
 
-  // 2. Wydatki w danym miesiącu
+  // 2. Wydatki miesięczne
   const fetchMonthlyExpenses = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token) {
-        setError('❌ Brak tokena autoryzacyjnego. Zaloguj się ponownie.');
-        window.location.href = '/login';
-        return;
-      }
       const params = { month: monthForMonthly };
-      const response = await axios.get('http://127.0.0.1:8000/api/home/', {
+      const resp = await axios.get('http://127.0.0.1:8000/api/home/', {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
-      setMonthlyExpenses(response.data.monthly_expenses || []);
-    } catch (err) {
-      setError('❌ Nie udało się pobrać danych miesięcznych.');
+      setMonthlyExpenses(resp.data.monthly_expenses || []);
+    } catch {
+      setError('Nie udało się pobrać danych miesięcznych');
     }
   };
 
-  // 3. Kategorie (tylko rok)
+  // 3. Kategorie
   const fetchCategoriesData = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token) {
-        setError('❌ Brak tokena autoryzacyjnego. Zaloguj się ponownie.');
-        window.location.href = '/login';
-        return;
-      }
       const params = { year: yearForCategories };
-      const response = await axios.get('http://127.0.0.1:8000/api/home/', {
+      const resp = await axios.get('http://127.0.0.1:8000/api/home/', {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
-      setExpenseCategories(response.data.expense_categories || {});
-    } catch (err) {
-      setError('❌ Nie udało się pobrać danych kategorii wydatków.');
+      setExpenseCategories(resp.data.expense_categories || {});
+    } catch {
+      setError('Błąd pobierania kategorii');
     }
   };
 
-  // 4. Przychody vs Wydatki
+  // 4. Incomes vs Expenses
   const fetchIncomesVsExpenses = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token) {
-        setError('❌ Brak tokena autoryzacyjnego. Zaloguj się ponownie.');
-        window.location.href = '/login';
-        return;
-      }
       const params = { year: yearForIncomesVsExpenses };
-      const response = await axios.get('http://127.0.0.1:8000/api/home/', {
+      const resp = await axios.get('http://127.0.0.1:8000/api/home/', {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
-      setIncomesVsExpenses(response.data.incomes_vs_expenses || { incomes: [], expenses: [] });
-    } catch (err) {
-      setError('❌ Nie udało się pobrać danych przychody vs wydatki.');
+      setIncomesVsExpenses(resp.data.incomes_vs_expenses || { incomes: [], expenses: [] });
+    } catch {
+      setError('Błąd pobierania incomes vs expenses');
     }
   };
 
-  // 5. Nowy wykres: Średnie wydatki tygodniowe (zakładamy param "year")
+  // 5. Średnie wydatki tygodniowe
   const fetchWeeklyAverages = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token) {
-        setError('❌ Brak tokena autoryzacyjnego.');
-        window.location.href = '/login';
-        return;
-      }
-      const params = { year: yearForWeekly, chart: 'weekly_averages' }; 
-      const response = await axios.get('http://127.0.0.1:8000/api/home/', {
+      // Podajemy chart=weekly_averages i param week=YYYY-WNN
+      const params = { chart: 'weekly_averages', week: weekForWeekly };
+      const resp = await axios.get('http://127.0.0.1:8000/api/home/', {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
-      // Oczekujemy array 7-elementowy
-      setWeeklyAverages(response.data.weekly_averages || []);
-    } catch (err) {
-      setError('❌ Nie udało się pobrać średnich wydatków tygodniowych.');
+      setWeeklyAverages(resp.data.weekly_averages || []);
+    } catch {
+      setError('Błąd pobierania średnich wydatków tygodniowych');
     }
   };
 
-  // 6. Nowy wykres: Suma wydatków vs liczba transakcji
-  const fetchSumVsCount = async () => {
+  // 6. Cele zrealizowane vs trwające
+  const fetchGoalsStatus = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token) {
-        setError('❌ Brak tokena autoryzacyjnego.');
-        window.location.href = '/login';
-        return;
-      }
-      const params = { year: yearForSumVsCount, chart: 'sum_vs_count' };
-      const response = await axios.get('http://127.0.0.1:8000/api/home/', {
+      const params = { chart: 'goals_status', year: yearForGoalsStatus };
+      const resp = await axios.get('http://127.0.0.1:8000/api/home/', {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
-      // Oczekujemy obiektu { sum: number, count: number }
-      setSumVsCount(response.data.sum_vs_count || { sum: 0, count: 0 });
-    } catch (err) {
-      setError('❌ Nie udało się pobrać danych: suma wydatków vs ilość transakcji.');
+      setGoalsStatus(resp.data.goals_status || { completed: 0, active: 0 });
+    } catch {
+      setError('Błąd pobierania stanu celów (zrealizowane vs trwające).');
     }
   };
 
-  // Pierwsze pobranie – wczytanie domyślnych danych
+  // Pobranie domyślne
   useEffect(() => {
     fetchYearlyExpenses();
     fetchMonthlyExpenses();
     fetchCategoriesData();
     fetchIncomesVsExpenses();
     fetchWeeklyAverages();
-    fetchSumVsCount();
+    fetchGoalsStatus();
   }, []);
 
-  /* ================== Definicje danych do istniejących wykresów ================== */
+  /* ================== DANE DO WYKRESÓW ================== */
   const monthsLabels = [
     'Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec',
     'Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'
   ];
 
   // 1. Wydatki roczne
+  const yearlyTitle = `Wydatki na przestrzeni roku ${yearForYearly}`;
   const yearlyExpensesData = {
     labels: monthsLabels,
     datasets: [
       {
-        label: 'Wydatki roczne (PLN)',
+        label: yearlyTitle,
         data: yearlyExpenses,
         borderColor: '#FF6384',
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -215,13 +218,14 @@ const HomePage = () => {
     ],
   };
 
-  // 2. Wydatki w danym miesiącu
+  // 2. Wydatki miesięczne
+  const monthlyTitle = `Wydatki za miesiąc ${monthForMonthly}`;
   const daysInMonth = monthlyExpenses.map((_, idx) => idx + 1);
   const monthlyExpensesData = {
     labels: daysInMonth,
     datasets: [
       {
-        label: 'Wydatki w tym miesiącu (PLN)',
+        label: monthlyTitle,
         data: monthlyExpenses,
         borderColor: '#36A2EB',
         backgroundColor: 'rgba(54,162,235,0.2)',
@@ -230,13 +234,14 @@ const HomePage = () => {
   };
 
   // 3. Kategorie
+  const categoriesTitle = `Wydatki na poszczególne kategorie w roku ${yearForCategories}`;
   const categoryLabels = Object.keys(expenseCategories);
   const categoryValues = Object.values(expenseCategories);
   const categoriesLineData = {
     labels: categoryLabels,
     datasets: [
       {
-        label: 'Wydatki wg kategorii (PLN)',
+        label: categoriesTitle,
         data: categoryValues,
         borderColor: '#FFA500',
         backgroundColor: 'rgba(255,165,0, 0.2)',
@@ -244,33 +249,32 @@ const HomePage = () => {
     ],
   };
 
-  // 4. Przychody vs Wydatki
+  // 4. Incomes vs Expenses
+  const incomesTitle = `Przychody vs Wydatki w roku ${yearForIncomesVsExpenses}`;
   const incomesVsExpensesData = {
     labels: monthsLabels,
     datasets: [
       {
         label: 'Przychody',
         data: incomesVsExpenses.incomes,
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        backgroundColor: 'rgba(75,192,192, 0.6)',
       },
       {
         label: 'Wydatki',
         data: incomesVsExpenses.expenses,
-        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        backgroundColor: 'rgba(255,99,132,0.6)',
       },
     ],
   };
 
-  /* ================== 2 nowe wykresy ================== */
-
-  // 5. Średnie wydatki tygodniowe (Line)
-  // Zakładamy array 7-elementowy: [pon, wt, sr, czw, pt, sob, niedz]
-  const weeklyLabels = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Ndz'];
+  // 5. Średnie wydatki tygodniowe
+  const weeklyTitle = `Średnie wydatki tygodniowe ${weekForWeekly}`;
+  const weeklyLabels = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'];
   const weeklyAveragesData = {
     labels: weeklyLabels,
     datasets: [
       {
-        label: 'Średnie wydatki (PLN) - tygodniowo',
+        label: weeklyTitle,
         data: weeklyAverages,
         borderColor: '#8B008B',
         backgroundColor: 'rgba(139, 0, 139, 0.2)',
@@ -278,39 +282,37 @@ const HomePage = () => {
     ],
   };
 
-  // 6. Suma wydatków vs liczba transakcji (Bar)
-  // Mamy obiekt { sum: number, count: number }
-  // Zaprezentujemy to jako 2 słupki: Suma, Liczba transakcji
-  const sumVsCountLabels = [''];
-  const sumVsCountData = {
-    labels: sumVsCountLabels,
+  // 6. Cele zrealizowane vs trwające
+  const goalsStatusTitle = `Cele zrealizowane vs trwające`;
+  // Wypiszemy dwa słupki
+  const goalsStatusData = {
+    labels: [''],
     datasets: [
       {
-        label: 'Suma wydatków (PLN)',
-        data: [sumVsCount.sum],
-        backgroundColor: 'rgba(255, 165, 0, 0.6)'
+        label: 'Zrealizowane',
+        data: [goalsStatus.completed],
+        backgroundColor: 'rgba(54,162,235, 0.6)',
       },
       {
-        label: 'Liczba transakcji',
-        data: [sumVsCount.count],
-        backgroundColor: 'rgba(54,162,235, 0.6)'
-      }
-    ]
+        label: 'Trwające',
+        data: [goalsStatus.active],
+        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+      },
+    ],
   };
 
   return (
     <div className="homepage-container">
       <Navbar />
       <div className="content">
-        {/* Wyśrodkowany tytuł */}
-        {error && <p className="error-message">{error}</p>}
+
 
         <div className="charts-container">
 
-          {/* === 1. Wydatki roczne (Line Chart) === */}
+          {/* 1) Wydatki roczne */}
           <div className="chart">
             <div className="chart-header">
-              <h3 style={{ textAlign: 'center', flex: 1 }}>Wydatki miesięczne w ciągu roku</h3>
+              <h3 style={{ flex: 1 }}>{yearlyTitle}</h3>
               <button className="button" onClick={() => setShowYearlyFilters(!showYearlyFilters)}>
                 Filtry
               </button>
@@ -333,10 +335,10 @@ const HomePage = () => {
             <Line data={yearlyExpensesData} />
           </div>
 
-          {/* === 2. Wydatki w danym miesiącu (Line Chart) === */}
+          {/* 2) Wydatki miesięczne */}
           <div className="chart">
             <div className="chart-header">
-              <h3 style={{ textAlign: 'center', flex: 1 }}>Wydatki w bieżącym miesiącu</h3>
+              <h3 style={{ flex: 1 }}>{monthlyTitle}</h3>
               <button className="button" onClick={() => setShowMonthlyFilters(!showMonthlyFilters)}>
                 Filtry
               </button>
@@ -356,10 +358,10 @@ const HomePage = () => {
             <Line data={monthlyExpensesData} />
           </div>
 
-          {/* === 3. Kategorie wydatków (Bar Chart) – TYLKO ROK === */}
+          {/* 3) Kategorie */}
           <div className="chart">
             <div className="chart-header">
-              <h3 style={{ textAlign: 'center', flex: 1 }}>Kategorie wydatków</h3>
+              <h3 style={{ flex: 1 }}>{categoriesTitle}</h3>
               <button className="button" onClick={() => setShowCategoriesFilters(!showCategoriesFilters)}>
                 Filtry
               </button>
@@ -382,10 +384,10 @@ const HomePage = () => {
             <Bar data={categoriesLineData} />
           </div>
 
-          {/* === 4. Przychody vs Wydatki (Bar Chart) === */}
+          {/* 4) Przychody vs Wydatki */}
           <div className="chart">
             <div className="chart-header">
-              <h3 style={{ textAlign: 'center', flex: 1 }}>Przychody vs Wydatki</h3>
+              <h3 style={{ flex: 1 }}>{incomesTitle}</h3>
               <button className="button" onClick={() => setShowIncomesVsExpensesFilters(!showIncomesVsExpensesFilters)}>
                 Filtry
               </button>
@@ -408,23 +410,22 @@ const HomePage = () => {
             <Bar data={incomesVsExpensesData} />
           </div>
 
-          {/* === 5. Nowy wykres: Średnie wydatki tygodniowe (Line) === */}
+          {/* 5) Średnie wydatki tygodniowe */}
           <div className="chart">
             <div className="chart-header">
-              <h3 style={{ textAlign: 'center', flex: 1 }}>Średnie wydatki tygodniowe</h3>
+              <h3 style={{ flex: 1 }}>{weeklyAveragesData.datasets[0].label}</h3>
               <button className="button" onClick={() => setShowWeeklyFilters(!showWeeklyFilters)}>
                 Filtry
               </button>
             </div>
             {showWeeklyFilters && (
               <div className="filter-container">
+                {/* Input type="week" nie zawsze wspierany, więc placeholder dla "YYYY-WNN" */}
                 <input
-                  type="number"
-                  min="2000"
-                  max="2100"
-                  value={yearForWeekly}
-                  onChange={(e) => setYearForWeekly(e.target.value)}
-                  style={{ width: '80px' }}
+                  type="text"
+                  placeholder="YYYY-WNN"
+                  value={weekForWeekly}
+                  onChange={(e) => setWeekForWeekly(e.target.value)}
                 />
                 <button className="button" onClick={fetchWeeklyAverages}>
                   Filtruj
@@ -434,30 +435,30 @@ const HomePage = () => {
             <Line data={weeklyAveragesData} />
           </div>
 
-          {/* === 6. Nowy wykres: Suma wydatków vs liczba transakcji (Bar) === */}
+          {/* 6) Cele zrealizowane vs trwające */}
           <div className="chart">
             <div className="chart-header">
-              <h3 style={{ textAlign: 'center', flex: 1 }}>Suma wydatków vs ilość transakcji</h3>
-              <button className="button" onClick={() => setShowSumVsCountFilters(!showSumVsCountFilters)}>
+              <h3 style={{ flex: 1 }}>{goalsStatusTitle}</h3>
+              <button className="button" onClick={() => setShowGoalsStatusFilters(!showGoalsStatusFilters)}>
                 Filtry
               </button>
             </div>
-            {showSumVsCountFilters && (
+            {showGoalsStatusFilters && (
               <div className="filter-container">
                 <input
                   type="number"
                   min="2000"
                   max="2100"
-                  value={yearForSumVsCount}
-                  onChange={(e) => setYearForSumVsCount(e.target.value)}
+                  value={yearForGoalsStatus}
+                  onChange={(e) => setYearForGoalsStatus(e.target.value)}
                   style={{ width: '80px' }}
                 />
-                <button className="button" onClick={fetchSumVsCount}>
+                <button className="button" onClick={fetchGoalsStatus}>
                   Filtruj
                 </button>
               </div>
             )}
-            <Bar data={sumVsCountData} />
+            <Bar data={goalsStatusData} />
           </div>
 
         </div>

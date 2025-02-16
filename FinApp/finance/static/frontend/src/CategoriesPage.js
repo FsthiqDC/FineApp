@@ -29,7 +29,6 @@ const CategoriesPage = () => {
   return (
     <div className="categories-container">
       <Navbar />
-      {error && <p className="error-message">{error}</p>}
       <ul className="categories-list">
         {categories.map((category) => (
           <li key={category.category_id} className="category-item">

@@ -1,0 +1,97 @@
+/* src/pages/admin/AdminDashboard.css */
+
+/* Główne otoczenie */
+.admin-dashboard-container {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+    gap: 20px;
+    padding-bottom: 60px; /* ewentualne odcięcie od dołu */
+  }
+  
+  .admin-dashboard-content {
+
+
+    margin-top: 60px;    
+    margin-left: 30px;
+    margin-right: 30px;
+    padding: 20px;
+  }
+  
+  .admin-dashboard-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Komunikat błędu */
+  .error-message {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  /* Kafelki statystyk */
+  .stats-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+  
+  .stat-card {
+    flex: 1 1 200px;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .stat-card h3 {
+    margin: 0 0 10px;
+    font-size: 1.1em;
+  }
+  
+  .stat-card p {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  /* Kontener wykresów */
+  .charts-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .chart {
+    /* Maksymalnie 2 wykresy w jednym wierszu */
+    flex: 0 1 46%; 
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .chart h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+  
+  /* Responsywność */
+  @media (max-width: 768px) {
+    /* Na mniejszych ekranach przejście do 1 wykresu na wiersz */
+    .chart {
+      flex: 1 1 100%;
+    }
+  }
+  

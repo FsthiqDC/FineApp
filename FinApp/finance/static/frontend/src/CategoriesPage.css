@@ -1,7 +1,6 @@
 /* Kontener główny dla kategorii */
 .categories-container {
   font-family: 'Arial', sans-serif;
-  margin: 0 auto;
   color: #333;
   background-color: #f5f7fa; /* Białe tło */
   text-align: center;
@@ -24,7 +23,9 @@
   gap: 20px;
   justify-content: center; /* Centrowanie siatki */
   align-items: start;
-  margin-right: 20px;
+  margin-right: 60px;
+  margin-top: 60px;
+  margin-left: 60px;
 }
 
 ul {
@@ -38,7 +39,7 @@ ul {
   padding: 20px;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   text-align: left; /* Tekst wyrównany do lewej */
-  min-height: 250px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -71,7 +72,7 @@ ul {
   margin: 0;
   font-size: 1em;
   color: #333; /* Czarny tekst */
-  text-align: justify;
+  text-align: center;
   overflow-wrap: break-word;
   word-wrap: break-word;
   margin-top: 10px;

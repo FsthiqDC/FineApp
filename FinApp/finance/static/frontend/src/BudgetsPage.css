@@ -1,0 +1,176 @@
+/* Bazowe tło i layout */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    color: #333;
+    background-color: #f5f7fa;
+}
+
+.budgets-container {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    background-color: #f5f7fa;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.budgets-content {
+    margin-top: 40px;
+    margin-right: 20px;
+    margin-left: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+h2 {
+    margin-top: 0;
+    font-size: 1.8em;
+}
+
+/* Tabela */
+.budgets-table {
+    width: 100%;
+    margin-top: 20px;
+    background-color: #fff;
+    border-collapse: collapse;
+    padding: 20px;
+}
+
+.budgets-table th,
+.budgets-table td {
+    text-align: center;
+    padding: 12px;
+    border-bottom: 1px solid #ccc;  
+}
+
+.budgets-table td {
+    gap: 10px;
+}
+
+/* Komunikaty */
+.error-message {
+    color: red;
+    font-weight: bold;
+}
+
+.success-message {
+    color: green;
+    font-weight: bold;
+}
+
+/* Przyciski */
+.button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    border: 1px solid #0056b3;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 13px;
+    margin: 5px;
+    justify-content: space-between;
+}
+
+.budget-filter-button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    border: 1px solid #0056b3;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 13px;
+}
+
+.budget-filter-button:hover {
+    background-color: #0056b3;
+}
+
+td .save-button, .cancel-button {
+    margin: 5px;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    width: 400px;
+    padding: 20px;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.4em;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-content form label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.modal-content form input[type="text"],
+.modal-content form input[type="number"],
+.modal-content form select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modal-content form button {
+    padding: 8px 16px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-content form button:hover {
+    background-color: #0056b3;
+}
+
+/* RWD */
+@media (max-width: 768px) {
+    .budgets-content {
+        margin: 10px;
+    }
+    .modal-content {
+        width: 90%;
+    }
+    .budgets-table th,
+    .budgets-table td {
+        padding: 8px;
+    }
+    .budgets-table {
+        display: block;
+        overflow-x: auto;
+    }
+}

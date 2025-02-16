@@ -536,7 +536,7 @@ const TransactionsPage = () => {
 
         {/* Sekcja: Lista Transakcji */}
         <div className="transactions-list">
-          <h2>Lista transakcji</h2>
+          <h2>Twoje transakcje</h2>
           {filteredTransactions.map((transaction) => (
             <div key={transaction.transaction_id} className="transaction-item">
               <div className="transaction-left">
@@ -557,12 +557,14 @@ const TransactionsPage = () => {
                 <img
                   src="edit-pen-icon.png"
                   alt="Edytuj"
+                  title='Edytuj'
                   onClick={() => openEditModal(transaction)}
                   className="action-icon"
                 />
                 <img
                   src="eye-icon.png"
                   alt="Szczegóły"
+                  title='Zobacz szczegóły'
                   onClick={() =>
                     toggleTransactionDetails(transaction.transaction_id)
                   }
@@ -571,6 +573,7 @@ const TransactionsPage = () => {
                 <img
                   src="recycle-bin-line-icon.png"
                   alt="Usuń"
+                  title='Usuń'
                   onClick={() => openDeleteModal(transaction)}
                   className="action-icon"
                 />
@@ -613,8 +616,8 @@ const TransactionsPage = () => {
           <div className="modal-content">
             <h2>Czy na pewno chcesz usunąć transakcję?</h2>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={closeDeleteModal}>Anuluj</button>
-              <button onClick={confirmDelete} style={{ marginLeft: '10px' }}>
+              <button class="cancel-button" onClick={closeDeleteModal}>Anuluj</button>
+              <button class="delete-button" onClick={confirmDelete} style={{ marginLeft: '10px' }}>
                 Usuń
               </button>
             </div>
@@ -681,9 +684,9 @@ const TransactionsPage = () => {
               onChange={handleEditFormChange}
             />
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={closeEditModal}>Anuluj</button>
-              <button onClick={confirmEdit} style={{ marginLeft: '10px' }}>
-                Zapisz zmiany
+              <button class="cancel-button" onClick={closeEditModal}>Anuluj</button>
+              <button class="save-button" onClick={confirmEdit} style={{ marginLeft: '10px' }}>
+                Zapisz
               </button>
             </div>
           </div>
