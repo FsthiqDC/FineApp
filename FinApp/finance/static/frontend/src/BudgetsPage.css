@@ -66,8 +66,8 @@ h2 {
 /* Przyciski */
 .button {
     padding: 8px 16px;
-    background-color: #007bff;
-    border: 1px solid #0056b3;
+    background-color: #003366;
+    border: 1px solid #00274d;
     border-radius: 4px;
     color: #fff;
     cursor: pointer;
@@ -79,8 +79,8 @@ h2 {
 
 .budget-filter-button {
     padding: 8px 16px;
-    background-color: #007bff;
-    border: 1px solid #0056b3;
+    background-color: #003366;
+    border: 1px solid #00274d;
     border-radius: 4px;
     color: #fff;
     cursor: pointer;
@@ -89,7 +89,7 @@ h2 {
 }
 
 .budget-filter-button:hover {
-    background-color: #0056b3;
+    background-color: #00274d;
 }
 
 td .save-button, .cancel-button {
@@ -147,14 +147,14 @@ td .save-button, .cancel-button {
 .modal-content form button {
     padding: 8px 16px;
     border: none;
-    background-color: #007bff;
+    background-color: #003366;
     color: #fff;
     border-radius: 4px;
     cursor: pointer;
 }
 
 .modal-content form button:hover {
-    background-color: #0056b3;
+    background-color: #00274d;
 }
 
 /* RWD */

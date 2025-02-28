@@ -72,13 +72,13 @@ html, body {
   font-size: 16px;
   font-weight: bold;
   color: #fff;
-  background-color: #007bff;
-  border: 1px solid #0056b3;
+  background-color: #003366;
+  border: 1px solid #00274d;
   border-radius: 4px;
   cursor: pointer;
 }
 .add-goal-button:hover {
-  background-color: #0056b3;
+  background-color: #00274d;
 }
 
 /* Środkowa kolumna: filtry */
@@ -151,9 +151,9 @@ html, body {
   background-color: #ddd;
 }
 .tab-active {
-  background-color: #007bff !important;
+  background-color: #003366 !important;
   color: #fff !important;
-  border: 1px solid #0056b3 !important;
+  border: 1px solid #00274d !important;
 }
 
 /* Kafelek celu */
@@ -199,7 +199,7 @@ html, body {
   width: 18px;
   height: 18px;
   background: #fff;         /* białe kółko */
-  border: 1px solid #007bff;/* niebieska obwódka */
+  border: 1px solid #003366;/* niebieska obwódka */
   border-radius: 100%;
   cursor: pointer;
   margin-top: -9px;         /* centrowanie kółka */
@@ -209,7 +209,7 @@ html, body {
   width: 16px;
   height: 16px;
   background: #fff;
-  border: 2px solid #007bff;
+  border: 2px solid #003366;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -246,7 +246,7 @@ html, body {
 }
 
 .save-goal-button {
-  background-color: #28a745;
+  background-color: #145214;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -257,7 +257,7 @@ html, body {
   background-color: #218838;
 }
 .cancel-edit-button {
-  background-color: #6c757d;
+  background-color: #212529;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -293,8 +293,8 @@ html, body {
 .pagination button {
   padding: 8px 16px;
   font-size: 14px;
-  background-color: #007bff;
-  border: 1px solid #0056b3;
+  background-color: #003366;
+  border: 1px solid #00274d;
   border-radius: 4px;
   color: #fff;
   cursor: pointer;
@@ -302,13 +302,13 @@ html, body {
 }
 
 .pagination button:hover {
-  background-color: #0056b3;
+  background-color: #00274d;
 }
 
 .pagination button:disabled {
   background-color: #e9ecef;
   border-color: #ccc;
-  color: #6c757d;
+  color: #212529;
   cursor: not-allowed;
 }
 
@@ -366,7 +366,7 @@ html, body {
   text-align: center;
   margin: 0 0 10px 0;
   font-size: 1.5em;
-  color: #007bff;
+  color: #003366;
 }
 .fanfare-content p {
   margin: 0;

@@ -108,14 +108,14 @@ html, body {
   font-size: 16px;
   font-weight: bold;
   color: #fff;
-  background-color: #007bff;
-  border: 1px solid #0056b3;
+  background-color: #003366;
+  border: 1px solid #00274d;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .add-transaction-button:hover {
-  background-color: #0056b3;
+  background-color: #00274d;
 }
 
 .filters select,
@@ -209,7 +209,7 @@ input {
 }
 
 button:hover {
-  background-color: #007bff;
+  background-color: #003366;
   color: #fff;
 }
 
@@ -302,7 +302,7 @@ button:hover {
   margin: 5px 5px 0 5px;
   padding: 8px 16px;
   font-size: 14px;
-  background-color: #28a745; /* Zielony kolor */
+  background-color: #145214; /* Zielony kolor */
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -314,7 +314,7 @@ button:hover {
   margin: 5px 5px 0 5px;
   padding: 8px 16px;
   font-size: 14px;
-  background-color: #6c757d; /* Szary kolor */
+  background-color: #212529; /* Szary kolor */
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -364,8 +364,8 @@ button:hover {
 .pagination button {
   padding: 8px 16px;
   font-size: 14px;
-  background-color: #007bff; /* Główny kolor przycisku */
-  border: 1px solid #0056b3; /* Obramowanie */
+  background-color: #003366; /* Główny kolor przycisku */
+  border: 1px solid #00274d; /* Obramowanie */
   border-radius: 4px;
   color: #fff; /* Kolor tekstu */
   cursor: pointer;
@@ -373,13 +373,13 @@ button:hover {
 }
 
 .pagination button:hover {
-  background-color: #0056b3; /* Kolor przycisku po najechaniu */
+  background-color: #00274d; /* Kolor przycisku po najechaniu */
 }
 
 .pagination button:disabled {
   background-color: #e9ecef; /* Kolor przycisku nieaktywnego */
   border-color: #ccc;
-  color: #6c757d;
+  color: #212529;
   cursor: not-allowed;
 }
 

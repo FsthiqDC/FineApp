@@ -58,7 +58,7 @@
 }
 
 .form-group input:focus {
-  outline: 2px solid #007bff;
+  outline: 2px solid #003366;
   outline-offset: 2px;
   background-color: #fff; /* Zostaw białe tło, aby zachować czytelność */
 }
@@ -76,9 +76,9 @@
 
 /* ===== Przycisk logowania ===== */
 .login-button {
-  background-color: #007bff;
+  background-color: #003366;
   color: white;
-  border: 1px solid #0056b3;
+  border: 1px solid #00274d;
   padding: 10px 15px;
   border-radius: 4px;
   font-size: 16px;
@@ -90,9 +90,9 @@
 }
 
 .register-button {
-  background-color: #007bff;
+  background-color: #003366;
   color: white;
-  border: 1px solid #0056b3;
+  border: 1px solid #00274d;
   padding: 10px 15px;
   border-radius: 4px;
   font-size: 16px;
@@ -103,7 +103,7 @@
 
 .register-button:hover,
 .login-button:hover {
-  background-color: #0056b3;
+  background-color: #00274d;
 }
 
 /* ===== Komunikat statusu ===== */
@@ -119,7 +119,7 @@
 }
 
 .forgot-password a {
-  color: #007bff;
+  color: #003366;
   text-decoration: none;
 }
 

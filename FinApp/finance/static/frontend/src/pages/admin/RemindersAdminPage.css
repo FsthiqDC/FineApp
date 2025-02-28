@@ -103,7 +103,7 @@ html, body {
 .reminder-admin-frequency {
   font-weight: bold;
   font-size: 14px;
-  color: #007bff;
+  color: #003366;
 }
 
 /* Subheader: użytkownik + isActive */
@@ -117,7 +117,7 @@ html, body {
 }
 
 .reminder-admin-active {
-  color: #28a745;
+  color: #145214;
   font-weight: bold;
 }
 .reminder-admin-inactive {
@@ -173,20 +173,20 @@ html, body {
 .admin-pagination button {
   padding: 8px 16px;
   font-size: 14px;
-  background-color: #007bff;
-  border: 1px solid #0056b3;
+  background-color: #003366;
+  border: 1px solid #00274d;
   border-radius: 4px;
   color: #fff;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 .admin-pagination button:hover {
-  background-color: #0056b3;
+  background-color: #00274d;
 }
 .admin-pagination button:disabled {
   background-color: #e9ecef;
   border-color: #ccc;
-  color: #6c757d;
+  color: #212529;
   cursor: not-allowed;
 }
 
@@ -223,7 +223,7 @@ html, body {
 
 /* Przyciski w modalu */
 .admin-cancel-button {
-  background-color: #6c757d;
+  background-color: #212529;
   border: none;
   color: #fff;
   padding: 8px 16px;
@@ -234,7 +234,7 @@ html, body {
   background-color: #5a6268;
 }
 .admin-save-button {
-  background-color: #28a745;
+  background-color: #145214;
   border: none;
   color: #fff;
   padding: 8px 16px;

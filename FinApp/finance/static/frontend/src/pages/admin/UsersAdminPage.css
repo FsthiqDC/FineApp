@@ -81,14 +81,14 @@ html, body {
     font-size: 16px;
     font-weight: bold;
     color: #fff;
-    background-color: #007bff;
-    border: 1px solid #0056b3;
+    background-color: #003366;
+    border: 1px solid #00274d;
     border-radius: 4px;
     cursor: pointer;
     text-align: center;
   }
   .add-user-button:hover {
-    background-color: #0056b3;
+    background-color: #00274d;
   }
   
   /* ŚRODKOWA KOLUMNA - FILTRY (odpowiednik .filters) */
@@ -174,11 +174,11 @@ html, body {
   /* Status (aktywny/zablokowany) */
   .active-status {
     font-weight: bold;
-    color: #28a745;
+    color: #145214;
   }
   .blocked-status {
     font-weight: bold;
-    color: #dc3545;
+    color: #7a0000;
   }
   
   /* AKCJE (odpowiednik .transaction-actions) */
@@ -243,21 +243,21 @@ html, body {
   .pagination button {
     padding: 8px 16px;
     font-size: 14px;
-    background-color: #007bff;
-    border: 1px solid #0056b3;
+    background-color: #003366;
+    border: 1px solid #00274d;
     border-radius: 4px;
     color: #fff;
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
   .pagination button:hover {
-    background-color: #0056b3;
+    background-color: #00274d;
     color: #fff;
   }
   .pagination button:disabled {
     background-color: #e9ecef;
     border-color: #ccc;
-    color: #6c757d;
+    color: #212529;
     cursor: not-allowed;
   }
   
@@ -319,7 +319,7 @@ html, body {
   
   /* Przyciski w modalu (cancel, save, delete) */
   .modal-content button.save-button {
-    background-color: #28a745;
+    background-color: #145214;
     border: none;
     color: #fff;
     padding: 8px 16px;
@@ -332,7 +332,7 @@ html, body {
   }
   
   .modal-content button.cancel-button {
-    background-color: #6c757d;
+    background-color: #212529;
     border: none;
     color: #fff;
     padding: 8px 16px;
@@ -345,7 +345,7 @@ html, body {
   }
   
   .modal-content button.delete-button {
-    background-color: rgb(224, 35, 35);
+    background-color: #7a0000;
     border: none;
     color: #fff;
     padding: 8px 16px;
@@ -354,7 +354,7 @@ html, body {
     cursor: pointer;
   }
   .modal-content button.delete-button:hover {
-    background-color: rgb(179, 45, 45);
+    background-color: #7a0000;
   }
   
   /* SCROLLBARY, JEŚLI CHCESZ TAK JAK W transactions-list */

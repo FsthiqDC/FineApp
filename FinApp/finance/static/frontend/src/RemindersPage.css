@@ -66,14 +66,14 @@ html, body {
   font-size: 16px;
   font-weight: bold;
   color: #fff;
-  background-color: #007bff;
-  border: 1px solid #0056b3;
+  background-color: #003366;
+  border: 1px solid #00274d;
   border-radius: 4px;
   cursor: pointer;
   text-align: center;
 }
 .add-reminder-button:hover {
-  background-color: #0056b3;
+  background-color: #00274d;
 }
 
 /* Sekcja Filtrów (środkowa kolumna) */
@@ -214,7 +214,7 @@ html, body {
 }
 
 .save-button {
-  background-color: #28a745;
+  background-color: #145214;
   border: none;
   color: #fff;
   padding: 8px 16px;
@@ -226,7 +226,7 @@ html, body {
   background-color: #218838;
 }
 .cancel-button {
-  background-color: #6c757d;
+  background-color: #212529;
   border: none;
   color: #fff;
   padding: 8px 16px;

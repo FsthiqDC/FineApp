@@ -71,16 +71,16 @@
   margin-top: 10px;
   padding: 6px 12px;
   font-size: 14px;
-  border: 1px solid #0056b3;
+  border: 1px solid #00274d;
   border-radius: 4px;
-  background-color: #007bff;
+  background-color: #003366;
   color: #fff;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .button:hover {
-  background-color: #0056b3;
+  background-color: #00274d;
   color: #fff;
 }
 
@@ -88,16 +88,16 @@
 .button {
   padding: 6px 12px;
   font-size: 14px;
-  border: 1px solid #0056b3;
+  border: 1px solid #00274d;
   border-radius: 4px;
-  background-color: #007bff;
+  background-color: #003366;
   color: #fff;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .button:hover {
-  background-color: #0056b3;
+  background-color: #00274d;
   color: #fff;
 }
 

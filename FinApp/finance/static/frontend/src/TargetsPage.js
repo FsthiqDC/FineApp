@@ -350,11 +350,11 @@ const TargetsPage = () => {
     const max = goal.targetAmount || 1;
     const pct = (val / max) * 100;
 
-    // Białe tło, wypełnienie do pct => #007bff
+    // Białe tło, wypełnienie do pct => #003366
     return {
       background: `linear-gradient(to right,
-        #007bff 0%,
-        #007bff ${pct}%,
+        #003366 0%,
+        #003366 ${pct}%,
         #ffffff ${pct}%,
         #ffffff 100%)`,
     };
@@ -444,7 +444,7 @@ const TargetsPage = () => {
             value={itemsPerPage}
             onChange={(e) => setItemsPerPage(Number(e.target.value))}
           >
-            <option value={4}>Ilość celów na strone (4)</option>
+            <option value={4}>Liczba celów na strone (4)</option>
             <option value={5}>5</option>
             <option value={10}>10</option>
           </select>

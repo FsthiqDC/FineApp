@@ -54,7 +54,7 @@
 }
 
 .form-group input:focus {
-  border-color: #007bff;
+  border-color: #003366;
   outline: none;
 }
 
@@ -70,9 +70,9 @@
 
 /* ===== Przycisk rejestracji ===== */
 .register-button {
-  background-color: #007bff;
+  background-color: #003366;
   color: white;
-  border: 1px solid #0056b3;
+  border: 1px solid #00274d;
   padding: 10px 15px;
   border-radius: 4px;
   font-size: 16px;
@@ -83,14 +83,14 @@
 }
 
 .register-button:hover {
-  background-color: #0056b3;
+  background-color: #00274d;
 }
 
 /* ===== Komunikaty ===== */
 .message {
   margin-top: 15px;
   font-size: 14px;
-  color: #28a745;
+  color: #145214;
 }
 
 .error-message {
@@ -141,7 +141,7 @@
 }
 
 .password-strength.silne {
-  color: #28a745;
+  color: #145214;
 }
 
 /* ===== Wymagania hasła ===== */
@@ -158,7 +158,7 @@
 }
 
 .login-link a {
-  color: #007bff;
+  color: #003366;
   text-decoration: none;
 }
 
